@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wzxlq.dao.WordDao">
+
+    <resultMap type="com.wzxlq.entity.Word" id="WordMap">
+        <result property="englishWord" column="english_Word" jdbcType="VARCHAR"/>
+        <result property="pa" column="pa" jdbcType="VARCHAR"/>
+        <result property="chineseWord" column="chinese_Word" jdbcType="VARCHAR"/>
+        <result property="engInstance1" column="eng_Instance1" jdbcType="VARCHAR"/>
+        <result property="chiInstance1" column="chi_Instance1" jdbcType="VARCHAR"/>
+        <result property="engInstance2" column="eng_Instance2" jdbcType="VARCHAR"/>
+        <result property="chiInstance2" column="chi_Instance2" jdbcType="VARCHAR"/>
+        <result property="collect" column="collect" jdbcType="INTEGER"/>
+        <result property="pron" column="pron" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="WordMap">
+        select
+          english_Word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron
+        from word
+        where english_Word = #{englishWord}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="WordMap">
+        select
+          english_Word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron
+        from word_rand
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="WordMap">
+        select
+          english_Word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron
+        from word
+
+    </select>
+    <select id="wordCountTest" resultMap="WordMap">
+           (select
+          english_Word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron
+          from word
+          where collect > ROUND(30+rand()*10)
+					order by rand()
+          limit 5
+					)
+					union
+	 (select
+          english_Word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron
+          from word
+          where collect > ROUND(10+rand()*10)
+					and collect &lt; 30
+					order by rand()
+          limit 7
+					)
+					union
+					(
+					select
+          english_Word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron
+          from word
+          where collect =0
+					order by rand()
+          limit 3
+					)
+    </select>
+    <!--新增所有列-->
+    <insert id="insert"  >
+        insert into word_rand(english_Word,pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron)
+        values (#{englishWord},#{pa}, #{chineseWord}, #{engInstance1}, #{chiInstance1}, #{engInstance2}, #{chiInstance2}, #{collect}, #{pron})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update word
+        <set>
+            <if test="pa != null and pa != ''">
+                pa = #{pa},
+            </if>
+            <if test="chineseWord != null and chineseWord != ''">
+                chinese_Word = #{chineseWord},
+            </if>
+            <if test="engInstance1 != null and engInstance1 != ''">
+                eng_Instance1 = #{engInstance1},
+            </if>
+            <if test="chiInstance1 != null and chiInstance1 != ''">
+                chi_Instance1 = #{chiInstance1},
+            </if>
+            <if test="engInstance2 != null and engInstance2 != ''">
+                eng_Instance2 = #{engInstance2},
+            </if>
+            <if test="chiInstance2 != null and chiInstance2 != ''">
+                chi_Instance2 = #{chiInstance2},
+            </if>
+            <if test="collect != null">
+                collect = #{collect},
+            </if>
+            <if test="pron != null and pron != ''">
+                pron = #{pron},
+            </if>
+        </set>
+        where english_Word = #{englishWord}
+    </update>
+
+
+</mapper>

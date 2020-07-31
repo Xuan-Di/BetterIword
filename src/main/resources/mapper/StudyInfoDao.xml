@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wzxlq.dao.StudyInfoDao">
+
+    <resultMap type="com.wzxlq.entity.StudyInfo" id="StudyInfoMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="openId" column="open_id" jdbcType="VARCHAR"/>
+        <result property="mark" column="mark" jdbcType="INTEGER"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="wordCount" column="word_count" jdbcType="INTEGER"/>
+        <result property="knowWord" column="know_word" jdbcType="INTEGER"/>
+        <result property="unknowWord" column="unknow_word" jdbcType="INTEGER"/>
+        <result property="fuzzyWord" column="fuzzy_word" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="StudyInfoMap">
+        select
+          id, open_id, mark, create_date, word_count, know_word, unknow_word, fuzzy_word
+        from test.study_info
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="StudyInfoMap">
+        select
+          id, open_id, mark, create_date, word_count, know_word, unknow_word, fuzzy_word
+        from test.study_info
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="StudyInfoMap">
+        select
+          id, open_id, mark, create_date, word_count, know_word, unknow_word, fuzzy_word
+        from test.study_info
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="openId != null and openId != ''">
+                and open_id = #{openId}
+            </if>
+            <if test="mark != null">
+                and mark = #{mark}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="wordCount != null">
+                and word_count = #{wordCount}
+            </if>
+            <if test="knowWord != null">
+                and know_word = #{knowWord}
+            </if>
+            <if test="unknowWord != null">
+                and unknow_word = #{unknowWord}
+            </if>
+            <if test="fuzzyWord != null">
+                and fuzzy_word = #{fuzzyWord}
+            </if>
+        </where>
+    </select>
+   <!--根据openid查询学习情况-->
+    <select id="queryStudyInfo" resultMap="StudyInfoMap">
+       select  DISTINCT open_id, mark, create_date, word_count, know_word, unknow_word, fuzzy_word
+       from study_info
+       where open_id=#{openId}
+    </select>
+    <!--根据openid查询签到日期-->
+    <select id="querySignTime" resultType="java.time.LocalDate">
+        select distinct create_date
+        from study_info
+        where
+        mark=1
+        and open_id=#{openId}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into test.study_info(open_id, mark, create_date, word_count, know_word, unknow_word, fuzzy_word)
+        values (#{openId},#{mark}, #{createDate}, #{wordCount}, #{knowWord}, #{unknowWord}, #{fuzzyWord})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update test.study_info
+        <set>
+            <if test="mark != null">
+                mark = #{mark},
+            </if>
+            <if test="wordCount != null">
+                word_count = #{wordCount},
+            </if>
+            <if test="knowWord != null">
+                know_word = #{knowWord},
+            </if>
+            <if test="unknowWord != null">
+                unknow_word = #{unknowWord},
+            </if>
+            <if test="fuzzyWord != null">
+                fuzzy_word = #{fuzzyWord},
+            </if>
+        </set>
+        where open_id = #{openId}
+        and  create_date = #{createDate}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from test.study_info where id = #{id}
+    </delete>
+
+</mapper>

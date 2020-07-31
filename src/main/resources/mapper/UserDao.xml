@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wzxlq.dao.UserDao">
+
+    <resultMap type="com.wzxlq.entity.User" id="UserMap">
+        <result property="openId" column="open_id" jdbcType="VARCHAR"/>
+        <result property="nickName" column="nick_name" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="INTEGER"/>
+        <result property="headImgUrl" column="head_img_url" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="UserMap">
+        select
+          open_id, nick_name, sex, head_img_url
+        from user
+        where open_id = #{openId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="UserMap">
+        select
+          open_id, nick_name, sex, head_img_url
+        from user
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="UserMap">
+        select
+          open_id, nick_name, sex, head_img_url
+        from user
+        <where>
+            <if test="openId != null and openId != ''">
+                and open_id = #{openId}
+            </if>
+            <if test="nickName != null and nickName != ''">
+                and nick_name = #{nickName}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="headImgUrl != null and headImgUrl != ''">
+                and head_img_url = #{headImgUrl}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="openId" useGeneratedKeys="true">
+        insert into user(open_id,nick_name, sex, head_img_url)
+        values (#{openId},#{nickName}, #{sex}, #{headImgUrl})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update user
+        <set>
+            <if test="nickName != null and nickName != ''">
+                nick_name = #{nickName},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="headImgUrl != null and headImgUrl != ''">
+                head_img_url = #{headImgUrl},
+            </if>
+        </set>
+        where open_id = #{openId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from user where open_id = #{openId}
+    </delete>
+
+</mapper>

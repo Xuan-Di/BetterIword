@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wzxlq.dao.UserWordDao">
+
+    <resultMap type="com.wzxlq.entity.UserWord" id="UserWordMap">
+        <result property="wordId" column="word_id" jdbcType="INTEGER"/>
+        <result property="englishWord" column="english_word" jdbcType="VARCHAR"/>
+        <result property="pa" column="pa" jdbcType="VARCHAR"/>
+        <result property="chineseWord" column="chinese_Word" jdbcType="VARCHAR"/>
+        <result property="engInstance1" column="eng_Instance1" jdbcType="VARCHAR"/>
+        <result property="chiInstance1" column="chi_Instance1" jdbcType="VARCHAR"/>
+        <result property="engInstance2" column="eng_Instance2" jdbcType="VARCHAR"/>
+        <result property="chiInstance2" column="chi_Instance2" jdbcType="VARCHAR"/>
+        <result property="collect" column="collect" jdbcType="INTEGER"/>
+        <result property="pron" column="pron" jdbcType="VARCHAR"/>
+        <result property="openId" column="open_id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="UserWordMap">
+        select
+          word_id, english_word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron, open_id
+        from user_word
+        where word_id = #{wordId}
+    </select>
+    <select id="queryAllByOpenId" resultMap="UserWordMap">
+        select
+          word_id, english_word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron, open_id
+        from user_word
+        where open_id = #{openId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="UserWordMap">
+        select
+          word_id, english_word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron, open_id
+        from user_word
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="UserWordMap">
+        select
+          word_id, english_word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron, open_id
+        from user_word
+        <where>
+            <if test="wordId != null">
+                and word_id = #{wordId}
+            </if>
+            <if test="englishWord != null and englishWord != ''">
+                and english_word = #{englishWord}
+            </if>
+            <if test="pa != null and pa != ''">
+                and pa = #{pa}
+            </if>
+            <if test="chineseWord != null and chineseWord != ''">
+                and chinese_Word = #{chineseWord}
+            </if>
+            <if test="engInstance1 != null and engInstance1 != ''">
+                and eng_Instance1 = #{engInstance1}
+            </if>
+            <if test="chiInstance1 != null and chiInstance1 != ''">
+                and chi_Instance1 = #{chiInstance1}
+            </if>
+            <if test="engInstance2 != null and engInstance2 != ''">
+                and eng_Instance2 = #{engInstance2}
+            </if>
+            <if test="chiInstance2 != null and chiInstance2 != ''">
+                and chi_Instance2 = #{chiInstance2}
+            </if>
+            <if test="collect != null">
+                and collect = #{collect}
+            </if>
+            <if test="pron != null and pron != ''">
+                and pron = #{pron}
+            </if>
+            <if test="openId != null and openId != ''">
+                and open_id = #{openId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" parameterType="com.wzxlq.entity.UserWord" keyProperty="wordId" useGeneratedKeys="true" >
+        insert into user_word(english_word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron, open_id)
+        values (#{englishWord}, #{pa}, #{chineseWord}, #{engInstance1}, #{chiInstance1}, #{engInstance2}, #{chiInstance2}, #{collect}, #{pron}, #{openId})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update user_word
+        <set>
+            <if test="englishWord != null and englishWord != ''">
+                english_word = #{englishWord},
+            </if>
+            <if test="pa != null and pa != ''">
+                pa = #{pa},
+            </if>
+            <if test="chineseWord != null and chineseWord != ''">
+                chinese_Word = #{chineseWord},
+            </if>
+            <if test="engInstance1 != null and engInstance1 != ''">
+                eng_Instance1 = #{engInstance1},
+            </if>
+            <if test="chiInstance1 != null and chiInstance1 != ''">
+                chi_Instance1 = #{chiInstance1},
+            </if>
+            <if test="engInstance2 != null and engInstance2 != ''">
+                eng_Instance2 = #{engInstance2},
+            </if>
+            <if test="chiInstance2 != null and chiInstance2 != ''">
+                chi_Instance2 = #{chiInstance2},
+            </if>
+            <if test="collect != null">
+                collect = #{collect},
+            </if>
+            <if test="pron != null and pron != ''">
+                pron = #{pron},
+            </if>
+            <if test="openId != null and openId != ''">
+                open_id = #{openId},
+            </if>
+        </set>
+        where word_id = #{wordId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from user_word where english_word = #{englishWord}
+        and open_id= #{openId}
+    </delete>
+
+</mapper>
