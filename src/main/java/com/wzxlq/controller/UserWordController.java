@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("userWord")
 public class UserWordController {
     /**
-     * 服务对象
+     * 服务对象.
      */
     @Resource
     private UserWordService userWordService;
