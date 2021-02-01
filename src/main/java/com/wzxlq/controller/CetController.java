@@ -19,10 +19,10 @@ import java.util.Set;
 @RequestMapping("cet")
 public class CetController {
     @Autowired
-    private RedisTemplate redisTemplate;
+    public RedisTemplate<String, Object> redisTemplate;
 
     @GetMapping("tingLiFourList")
-    public ArrayList<String> TingLiFourList() {
+    public ArrayList<String> tingLiFourList() {
         ArrayList<String> list = new ArrayList<>();
         Set set = redisTemplate.opsForHash().keys("cet4");
         for (Object o : set) {
@@ -43,7 +43,7 @@ public class CetController {
          return tl;
     }
     @GetMapping("tingLiSixList")
-    public ArrayList<String> TingLiSixList() {
+    public ArrayList<String> tingLiSixList() {
         ArrayList<String> list = new ArrayList<>();
         Set set = redisTemplate.opsForHash().keys("cet6");
         for (Object o : set) {

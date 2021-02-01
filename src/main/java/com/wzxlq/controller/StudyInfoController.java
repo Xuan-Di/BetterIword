@@ -1,18 +1,12 @@
 package com.wzxlq.controller;
 
 import com.wzxlq.entity.StudyInfo;
-import com.wzxlq.entity.Word;
 import com.wzxlq.service.StudyInfoService;
-import com.wzxlq.utils.GetContinuousSignInDay;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 
 /**

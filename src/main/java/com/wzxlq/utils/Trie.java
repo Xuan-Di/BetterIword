@@ -7,7 +7,7 @@ import java.util.TreeMap;
  * @date 2020/2/11 - 12:03
  */
 public class Trie {
-    private class Node {
+    private static class Node {
         public boolean isWord;
         public TreeMap<Character, Node> next;
         public int count;
@@ -38,13 +38,20 @@ public class Trie {
         return size;
     }
 
-    // 向Trie中添加一个新的单词word
+    /**
+     * 功能描述: 向Trie中添加一个新的单词word
+     *
+     * @param word
+     * @return void
+     */
+
     public void add(String word) {
         Node cur = root;
         for (int i = 0; i < word.length(); i++) {
             char c = word.charAt(i);
-            if (cur.next.get(c) == null)
+            if (cur.next.get(c) == null) {
                 cur.next.put(c, new Node());
+            }
             cur = cur.next.get(c);
         }
         cur.count = cur.count + 1;
@@ -54,24 +61,34 @@ public class Trie {
         }
     }
 
-    // 查询单词word是否在Trie中
+    /**
+     * 功能描述: 查找是否存在
+     * @param word
+     * @return boolean
+     */
     public boolean contains(String word) {
         Node cur = root;
         for (int i = 0; i < word.length(); i++) {
             char c = word.charAt(i);
-            if (cur.next.get(c) == null)
+            if (cur.next.get(c) == null) {
                 return false;
+            }
             cur = cur.next.get(c);
         }
         return cur.isWord;
     }
-
+    /**
+     * 功能描述:查询词频
+     * @param word
+     * @return int
+     */
     public int count(String word) {
         Node cur = root;
         for (int i = 0; i < word.length(); i++) {
             char c = word.charAt(i);
-            if (cur.next.get(c) == null)
+            if (cur.next.get(c) == null) {
                 return 0;
+            }
             cur = cur.next.get(c);
         }
         return cur.count;
@@ -82,8 +99,9 @@ public class Trie {
         Node cur = root;
         for (int i = 0; i < prefix.length(); i++) {
             char c = prefix.charAt(i);
-            if (cur.next.get(c) == null)
+            if (cur.next.get(c) == null) {
                 return false;
+            }
             cur = cur.next.get(c);
         }
         return true;

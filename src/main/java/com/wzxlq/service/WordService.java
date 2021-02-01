@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * (Word)表服务接口
  *
- * @author makejava
+ * @author 王照轩
  * @since 2020-04-13 21:49:19
  */
 public interface WordService {
@@ -64,4 +64,5 @@ public interface WordService {
 
 
     List<Word> wordCountTest();
+
 }

@@ -4,7 +4,7 @@ import com.wzxlq.dto.WordInfoDTO;
 import com.wzxlq.entity.StudyInfo;
 import com.wzxlq.entity.Word;
 import com.wzxlq.dao.WordDao;
-import com.wzxlq.exception.OpenIdNULL;
+import com.wzxlq.exception.OpenIdNULLException;
 import com.wzxlq.service.StudyInfoService;
 import com.wzxlq.service.WordService;
 import org.elasticsearch.action.search.SearchRequest;
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -100,13 +101,8 @@ public class WordServiceImpl implements WordService {
     }
 
     //第一次注册的时候 推送单词 和redis加入单词
-    @Transactional
     @Override
     public List<Word> firstQueryWords(String openId) {
-        if (openId == null) {
-            throw new OpenIdNULL("openid为空", 400);
-        }
-        ArrayList<Word> list = new ArrayList<>();
         //生成用户复习的单词队列
         Queue<Word> wordQueue = new PriorityQueue<>((a, b) -> b.getCollect() - a.getCollect());
         //先加入一个NULL单词用于后续判断是不是第一次背单词，如果是，就不会有复习单词弹出
@@ -116,7 +112,7 @@ public class WordServiceImpl implements WordService {
         Integer dailyCount = (Integer) redisTemplate.opsForHash().get("User_" + openId, "dailyCount");
         dailyCount = dailyCount == null ? 20 : dailyCount;
         //弹出20个单词，并加入到复习队列
-        list = (ArrayList<Word>) wordDao.queryAllByLimit(0, dailyCount);
+        List<Word> list = wordDao.queryAllByLimit(0, dailyCount);
         redisTemplate.opsForHash().put("User_" + openId, "wordIndex", 20);
         reviewMap.get(openId).addAll(list);
         //缓存今天的单词列表，当天下次访问单词就不从redis中取，直接从缓存map中取
@@ -129,14 +125,9 @@ public class WordServiceImpl implements WordService {
     }
 
     //每天背诵的单词
-    @Transactional
     @Override
     public List<Word> queryTodayWords(String openId) {
-        if (openId == null) {
-            throw new OpenIdNULL("openid为空", 400);
-        }
         List<Word> words = new ArrayList<>();
-
         //如果缓存map中没有该用户
         if (!todayWordMap.containsKey(openId)) {
             Integer dailyCount = (Integer) redisTemplate.opsForHash().get("User_" + openId, "dailyCount");
@@ -150,8 +141,7 @@ public class WordServiceImpl implements WordService {
                 dailyCount--;
             }
             Integer wordIndex = (Integer) redisTemplate.opsForHash().get("User_" + openId, "wordIndex");
-            System.out.println("index: " + wordIndex);
-            System.out.println("DBcount: " + dailyCount);
+            //wordIndex是用户的单词序号索引，dailyCount是还剩多少个单词需要从数据库中取。
             List<Word> wordsFromDB = wordDao.queryAllByLimit(wordIndex, dailyCount);
             if (wordsFromDB != null && !wordsFromDB.isEmpty()) {
                 words.addAll(wordsFromDB);
@@ -196,12 +186,13 @@ public class WordServiceImpl implements WordService {
         }
         keySet.add(openId + wordInfo.getType());
         redisTemplate.opsForSet().add(openId + wordInfo.getType(), wordInfo.getWord());
-        if (wordInfo.getType().equals("know")) {
+        if ("know".equals(wordInfo.getType())) {
             boolean remove = todayWordMap.get(openId).remove(wordInfo.getWord());
             //redisTemplate.opsForList().remove(openId + CACHE_POOL, 1, wordInfo.getWord());
             Integer wordIndex = (Integer) redisTemplate.opsForHash().get("User_" + openId, "wordIndex");
+            wordIndex = Optional.ofNullable(wordIndex).orElse(0);
             redisTemplate.opsForHash().put("User_" + openId, "wordIndex", wordIndex + 1);
-            if (remove == true) {
+            if (remove) {
                 //增加排名
                 rankService.incrScore("score", openId, 1);
             }
@@ -229,6 +220,8 @@ public class WordServiceImpl implements WordService {
             return true;
         }
     }
+
+
 
     //在ES中查询
     @Override

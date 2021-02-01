@@ -7,10 +7,10 @@ import lombok.Data;
  * @date 2020/4/27 - 10:19
  */
 @Data
-public class OpenIdNULL extends RuntimeException{
+public class OpenIdNULLException extends RuntimeException{
     private Integer code;
 
-  public OpenIdNULL(String message, Integer code) {
+  public OpenIdNULLException(String message, Integer code) {
     super(message);
     this.code = code;
   }

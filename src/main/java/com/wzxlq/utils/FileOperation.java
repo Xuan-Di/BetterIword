@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
 
+/**
+ * @author 王照轩
+ * @date 2020/4/16 - 21:47
+ */
 public class FileOperation {
 
     /**
@@ -47,16 +51,17 @@ public class FileOperation {
         if (scanner.hasNextLine()) {
             String contents = scanner.useDelimiter("\\A").next();
             int start = firstCharacterIndex(contents, 0);
-            for (int i = start + 1; i <= contents.length(); )
+            for (int i = start + 1; i <= contents.length(); ) {
                 if (i == contents.length() || !Character.isLetter(contents.charAt(i))) {
                     String word = contents.substring(start, i).toLowerCase();
                     words.add(word);
                     start = firstCharacterIndex(contents, i);
                     i = start + 1;
-                } else
+                } else {
                     i++;
+                }
+            }
         }
-
         return true;
     }
 
@@ -71,9 +76,11 @@ public class FileOperation {
 
     private static int firstCharacterIndex(String s, int start) {
 
-        for (int i = start; i < s.length(); i++)
-            if (Character.isLetter(s.charAt(i)))
+        for (int i = start; i < s.length(); i++) {
+            if (Character.isLetter(s.charAt(i))) {
                 return i;
+            }
+        }
         return s.length();
     }
 }

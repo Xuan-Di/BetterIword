@@ -15,7 +15,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class UserWordDTO implements Serializable {
 
-//    private Integer wordId;
+    /* private Integer wordId; */
 
     private String englishWord;
 

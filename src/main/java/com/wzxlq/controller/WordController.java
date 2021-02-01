@@ -13,7 +13,6 @@ import com.wzxlq.utils.sentUtil;
 import com.wzxlq.vo.QueryAllVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -43,12 +42,10 @@ public class WordController {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
-    //    @Transactional
     @GetMapping("queryAll")
     public QueryAllVO queryAll(HttpServletRequest request) {
         //获取code
         String code = request.getParameter("code");
-        System.out.println(code);
         //换取accesstoken的地址
         String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code";
         url = url.replace("APPID", "wxb1b153e1c472f2de")
@@ -87,8 +84,7 @@ public class WordController {
     }
     @GetMapping("queryWord")
     public List<Word> queryWord(){
-        List<Word> wordList = wordService.queryAllByLimit(1080, 10);
-        return wordList;
+        return wordService.queryAllByLimit(1080, 10);
     }
 
     @GetMapping("queryInTest")
@@ -111,33 +107,56 @@ public class WordController {
         }
     }
 
+
+    /**
+     * @param keyword
+     * @return
+     */
     @GetMapping("/word/queryInEs")
     public List<Map<String, Object>> queryInEs(String keyword) {
+         //return wordService.queryByFuzzyMatching(keyword);
         return wordService.queryInEs(keyword);
     }
 
-    //每次点击都要经过这个统计
+   /**
+    * 功能描述 :每次点击都要经过这个统计
+    * @param wordInfoDTO
+    * @param request
+    * @return boolean
+    */
     @PostMapping("/word/wordInfo")
     public boolean wordInfo(@RequestBody WordInfoDTO wordInfoDTO, HttpServletRequest request) {
         String openId = request.getHeader("token");
-        boolean success = wordService.wordInfo(wordInfoDTO, openId);
-        return success;
+        return wordService.wordInfo(wordInfoDTO, openId);
     }
+   /**
+    * 功能描述:完成今天的背单词任务
+    * @param request
+    * @return boolean
+    */
 
-    //今日任务完成
     @GetMapping("/word/finishToday")
     public boolean finishToday(HttpServletRequest request) {
         String openId = request.getHeader("token");
         return wordService.killWordMapWithOpenId(openId);
     }
 
-    //复习
+
+    /**
+     * 功能描述 :复习
+     * @param request
+     * @return java.util.List<com.wzxlq.entity.Word>
+     */
     @GetMapping("/word/review")
     public List<Word> review(HttpServletRequest request) {
         String openId = request.getHeader("token");
         return wordService.review(openId);
     }
-    //词汇量测试
+    /**
+     * 功能描述: 词汇量测试
+     * @param
+     * @return java.util.List<com.wzxlq.entity.Word>
+     */
     @GetMapping("/word/wordCountTest")
     public List<Word> wordCountTest() {
         return  wordService.wordCountTest();

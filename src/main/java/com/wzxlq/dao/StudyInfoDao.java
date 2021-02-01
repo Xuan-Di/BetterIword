@@ -1,7 +1,6 @@
 package com.wzxlq.dao;
 
 import com.wzxlq.entity.StudyInfo;
-import com.wzxlq.entity.Word;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
@@ -65,8 +64,16 @@ public interface StudyInfoDao {
      */
     int deleteById(Integer id);
 
+    /**
+     * @param openId 用户openId
+     * @return 学习情况总列表
+     */
     List<StudyInfo> queryStudyInfo(String openId);
 
+    /**
+     * @param openId 用户openId
+     * @return 打卡时间列表
+     */
     List<LocalDate> querySignTime(String openId);
 
 }

@@ -35,7 +35,7 @@ public class TranslateApi {
 
     public static String getTranlate(String word) throws IOException {
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         String q = word;
         String salt = String.valueOf(System.currentTimeMillis());
         params.put("from", "auto");
@@ -118,14 +118,14 @@ public class TranslateApi {
         if (string == null) {
             return null;
         }
-        char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+        char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
         byte[] btInput = string.getBytes(StandardCharsets.UTF_8);
         try {
             MessageDigest mdInst = MessageDigest.getInstance("SHA-256");
             mdInst.update(btInput);
             byte[] md = mdInst.digest();
             int j = md.length;
-            char str[] = new char[j * 2];
+            char[] str = new char[j * 2];
             int k = 0;
             for (byte byte0 : md) {
                 str[k++] = hexDigits[byte0 >>> 4 & 0xf];

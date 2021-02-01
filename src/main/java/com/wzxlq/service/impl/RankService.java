@@ -10,11 +10,12 @@ import java.util.Set;
 /**
  * @author 王照轩
  * @date 2020/4/17 - 11:24
+ * 0236980
  */
 @Service
 public class RankService {
     @Autowired
-    private RedisTemplate redisTemplate;
+    public RedisTemplate redisTemplate;
 
     /**
      * 添加一个元素, zset与set最大的区别就是每个元素都有一个score，因此有个排序的辅助功能;  zadd

@@ -31,7 +31,7 @@ public class RankController {
     @Autowired
     private UserService userService;
     @Autowired
-    private RedisTemplate redisTemplate;
+    public RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private StudyInfoService studyInfoService;
     @GetMapping("queryRank")

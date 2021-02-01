@@ -3,6 +3,7 @@ package com.wzxlq.dao;
 import com.wzxlq.entity.Word;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
+import java.util.Map;
 
 /**
  * (Word)表数据库访问层
@@ -55,4 +56,6 @@ public interface WordDao {
 
 
     List<Word> wordCountTest();
+
+    List<Word> queryByFuzzyMatching(String keyword);
 }
