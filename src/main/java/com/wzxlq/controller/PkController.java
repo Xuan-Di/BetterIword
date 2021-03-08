@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.wzxlq.dto.ResponseDto;
 import com.wzxlq.entity.Answer;
 import com.wzxlq.entity.QuestionBank;
+import com.wzxlq.entity.User;
 import com.wzxlq.service.QuestionBankService;
+import com.wzxlq.service.UserService;
 import com.wzxlq.utils.MatchQueue;
 import com.wzxlq.utils.PkRoom;
 import com.wzxlq.utils.WebSocket;
@@ -31,17 +33,22 @@ public class PkController {
     private WebSocket webSocket;
     @Resource
     private QuestionBankService questionBankService;
+    @Resource
+    private UserService userService;
 
     @GetMapping("/enterQueue/{username}")
     public void enterQueue(@PathVariable String username) {
         log.info(username+" 进入队列");
         if (matchQueue.getSize() >= 1) {
             String opponentName = matchQueue.exitQueue();
-            log.info("对手的姓名:{}", opponentName);
             PkRoom firstPerspective = new PkRoom();
             PkRoom secondPerspective = new PkRoom();
-            firstPerspective.setOpponentName(opponentName);
-            secondPerspective.setOpponentName(username);
+            User myself = userService.queryById(username);
+            User opponent = userService.queryById(opponentName);
+            log.info("对手的openid:{}", opponent.getOpenId());
+            log.info("对手的姓名:{}", opponent.getNickName());
+            firstPerspective.setOpponentUser(opponent);
+            secondPerspective.setOpponentUser(myself);
             List<QuestionBank> questions = questionBankService.queryAllByLimit();
             firstPerspective.setWords(questions);
             secondPerspective.setWords(questions);

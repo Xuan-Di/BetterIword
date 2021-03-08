@@ -30,6 +30,10 @@ public class UserController {
         String openId = request.getHeader("token");
         return userService.queryById(openId);
     }
+    @GetMapping("test")
+    public User quess(String username){
+        return userService.queryById(username);
+    }
     @GetMapping("changeUserName")
     public User changeUserName(String name,HttpServletRequest request){
         String openId = request.getHeader("token");

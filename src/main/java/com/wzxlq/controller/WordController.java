@@ -89,7 +89,6 @@ public class WordController {
 
     @GetMapping("queryInTest")
     public QueryAllVO queryInTest(String openId) {
-        System.out.println(openId);
         User user = userService.queryById(openId);
         if (user == null) {
             List<Word> words = wordService.firstQueryWords(openId);

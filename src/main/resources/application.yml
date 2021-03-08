@@ -2,6 +2,9 @@
 server:
   port: 8889
 spring:
+  devtools:
+    restart:
+      enabled: true
   datasource:
     url: jdbc:mysql://106.14.44.65/test?useUnicode=true&characterEncoding=UTF-8
     username: root

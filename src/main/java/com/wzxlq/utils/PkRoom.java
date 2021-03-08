@@ -1,6 +1,7 @@
 package com.wzxlq.utils;
 
 import com.wzxlq.entity.QuestionBank;
+import com.wzxlq.entity.User;
 import com.wzxlq.entity.Word;
 import lombok.Data;
 
@@ -16,6 +17,6 @@ import java.util.List;
  */
 @Data
 public class PkRoom implements Serializable {
-    private String opponentName;
+    private User opponentUser;
     private List<QuestionBank> words;
 }
