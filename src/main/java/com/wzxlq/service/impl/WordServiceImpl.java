@@ -1,5 +1,6 @@
 package com.wzxlq.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wzxlq.dto.WordInfoDTO;
 import com.wzxlq.entity.StudyInfo;
 import com.wzxlq.entity.Word;
@@ -38,7 +39,7 @@ public class WordServiceImpl implements WordService {
     @Resource
     private WordDao wordDao;
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private RestHighLevelClient restHighLevelClient;
     @Autowired
@@ -109,11 +110,9 @@ public class WordServiceImpl implements WordService {
         wordQueue.add(new Word("NULL", Integer.MAX_VALUE));
         //将用户的复习单词队列加入到复习的hashmap
         reviewMap.put(openId, wordQueue);
-        Integer dailyCount = (Integer) redisTemplate.opsForHash().get("User_" + openId, "dailyCount");
-        dailyCount = dailyCount == null ? 20 : dailyCount;
+        Integer dailyCount = getDailyCount(openId);
         //弹出20个单词，并加入到复习队列
         List<Word> list = wordDao.queryAllByLimit(0, dailyCount);
-        redisTemplate.opsForHash().put("User_" + openId, "wordIndex", 20);
         reviewMap.get(openId).addAll(list);
         //缓存今天的单词列表，当天下次访问单词就不从redis中取，直接从缓存map中取
         todayWordMap.put(openId, list);
@@ -124,23 +123,30 @@ public class WordServiceImpl implements WordService {
         return list;
     }
 
+    private Integer getDailyCount(String openId) {
+        Integer dailyCount = (Integer) redisTemplate.opsForHash().get("User_" + openId, "dailyCount");
+        dailyCount = dailyCount == null ? 20 : dailyCount;
+        return dailyCount;
+    }
+
     //每天背诵的单词
     @Override
     public List<Word> queryTodayWords(String openId) {
         List<Word> words = new ArrayList<>();
         //如果缓存map中没有该用户
         if (!todayWordMap.containsKey(openId)) {
-            Integer dailyCount = (Integer) redisTemplate.opsForHash().get("User_" + openId, "dailyCount");
-            dailyCount = dailyCount == null ? 20 : dailyCount;
+            int dailyCount = getDailyCount(openId);
             while (dailyCount > 0) {
-                Word o = (Word) redisTemplate.opsForList().rightPop(openId + CACHE_POOL);
+                Object o = redisTemplate.opsForList().rightPop(openId + CACHE_POOL);
                 if (o == null) {
                     break;
                 }
-                words.add(o);
+                Word word = ((JSONObject) o).toJavaObject(Word.class);
+                words.add(word);
                 dailyCount--;
             }
             Integer wordIndex = (Integer) redisTemplate.opsForHash().get("User_" + openId, "wordIndex");
+            wordIndex = wordIndex == null ? 20 : wordIndex;
             //wordIndex是用户的单词序号索引，dailyCount是还剩多少个单词需要从数据库中取。
             List<Word> wordsFromDB = wordDao.queryAllByLimit(wordIndex, dailyCount);
             if (wordsFromDB != null && !wordsFromDB.isEmpty()) {
@@ -220,7 +226,6 @@ public class WordServiceImpl implements WordService {
             return true;
         }
     }
-
 
 
     //在ES中查询

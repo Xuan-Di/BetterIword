@@ -1,5 +1,6 @@
 //package com.wzxlq.service.impl;
 //
+//import com.alibaba.fastjson.JSONObject;
 //import com.wzxlq.dao.UserDao;
 //import com.wzxlq.entity.TingLi;
 //import com.wzxlq.entity.Word;
@@ -29,7 +30,7 @@
 //    @Resource
 //    private UserDao userDao;
 //    @Autowired
-//    private RedisTemplate redisTemplate;
+//    private RedisTemplate<String, Object> redisTemplate;
 //    public HashMap<String, List<Integer>> studyInfoMap = new HashMap<>();
 //    public List<Integer> list = new ArrayList<>();
 //    public HashMap<String, Queue<Word>> reviewMap = new HashMap<>();
@@ -56,8 +57,8 @@
 //
 //    @Test
 //    public void findsiji() throws IOException {
-//        //String targetUrl = "http://m.kekenet.com/cet6/ljtl/cet6zhenti";
-//        String targetUrl = "http://m.kekenet.com/cet4/tl/cet4zhenti";
+//        String targetUrl = "http://m.kekenet.com/cet6/ljtl/cet6zhenti";
+//        //String targetUrl = "http://m.kekenet.com/cet4/tl/cet4zhenti";
 //        //获取connetion
 //        Connection connection = Jsoup.connect(targetUrl);
 //        //伪造请求头
@@ -112,32 +113,35 @@
 //            tl.setContent(new ArrayList<>());
 //            Elements ps = parse.select(".f-y").select("p");
 //            for (Element p : ps) {
-//                    String text = p.text();
-//                    if (!"".equals(text) && text != null) {
-//                        String[] split = text.split("\\$");
-//                        List<String> stringList = Arrays.asList(split);
-//                        for (String s2 : stringList) {
-//                            System.out.println(s2);
-//                            tl.getContent().add(s2);
-//                        }
+//                String text = p.text();
+//                if (!"".equals(text) && text != null) {
+//                    String[] split = text.split("\\$");
+//                    List<String> stringList = Arrays.asList(split);
+//                    for (String s2 : stringList) {
+//                        System.out.println(s2);
+//                        tl.getContent().add(s2);
+//                    }
 //                }
 //            }
 ////            if (!tl.getTitle().equals("") && !tl.getVoice().equals("")) {
 ////                list.add(tl);
 ////            }
 //            if (!tl.getTitle().equals("") && !tl.getVoice().equals("")) {
-//                redisTemplate.opsForHash().put("cet4", tl.getTitle(), tl);
+//                redisTemplate.opsForHash().put("cet6", tl.getTitle(), tl);
 //            }
 //        }
 //    }
 //
 //    @Test
 //    public void queryCet4() {
-//        Set set = redisTemplate.opsForHash().keys("cet4");
-//        for (Object o : set) {
-//            System.out.println(o);
-//        }
-//        TingLi tl = (TingLi) redisTemplate.opsForHash().get("cet4", "2019年6月英语四级:第1套");
-//        System.out.println(tl.getContent());
+//        //String openId = "wzx";
+//        //redisTemplate.opsForHash().put("User_" + openId, "isTixing", 1);
+//        //redisTemplate.opsForList().leftPush("MATCHQUEUE", "wzx");
+//
+//        Object o = redisTemplate.opsForList().rightPop("MATCHQUEUE");
+//        String m = (String) o;
+//        System.out.println(m);
+//        //Object tixing = redisTemplate.opsForHash().get("cet4", "2019年6月英语四级:第1套");
+//        //TingLi tl = ((JSONObject) tixing).toJavaObject(TingLi.class);
 //    }
 //}

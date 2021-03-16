@@ -1,5 +1,6 @@
 package com.wzxlq.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wzxlq.entity.TingLi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -38,10 +39,15 @@ public class CetController {
     }
 
     @GetMapping("tingLiFourOne")
-    public TingLi tingLiFourOne(String title){
-         TingLi tl = (TingLi)redisTemplate.opsForHash().get("cet4",title);
-         return tl;
+    public TingLi tingLiFourOne(String title) {
+        Object tl4 =  redisTemplate.opsForHash().get("cet4", title);
+        TingLi tl = null;
+        if (tl4 != null) {
+            tl = ((JSONObject) tl4).toJavaObject(TingLi.class);
+        }
+        return tl;
     }
+
     @GetMapping("tingLiSixList")
     public ArrayList<String> tingLiSixList() {
         ArrayList<String> list = new ArrayList<>();
@@ -59,10 +65,13 @@ public class CetController {
     }
 
     @GetMapping("tingLiSixOne")
-    public TingLi tingLiSixOne(String title){
+    public TingLi tingLiSixOne(String title) {
         System.out.println(title);
-         TingLi tl = (TingLi)redisTemplate.opsForHash().get("cet6",title);
-        System.out.println(tl.getTitle());
-         return tl;
+        Object tl6 =  redisTemplate.opsForHash().get("cet6", title);
+        TingLi tl = null;
+        if (tl6 != null) {
+            tl = ((JSONObject) tl6).toJavaObject(TingLi.class);
+        }
+        return tl;
     }
 }

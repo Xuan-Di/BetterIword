@@ -1,6 +1,8 @@
 package com.wzxlq.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wzxlq.entity.RankInfo;
+import com.wzxlq.entity.TingLi;
 import com.wzxlq.entity.User;
 import com.wzxlq.service.StudyInfoService;
 import com.wzxlq.service.UserService;
@@ -34,6 +36,7 @@ public class RankController {
     public RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private StudyInfoService studyInfoService;
+
     @GetMapping("queryRank")
     public List<RankPersonVO> queryRank() {
         ArrayList<RankPersonVO> list = new ArrayList<>();
@@ -58,7 +61,7 @@ public class RankController {
         List<LocalDate> localDates = studyInfoService.querySignTime(openId);
         Collections.reverse(localDates);
         int linkSignInCount = GetContinuousSignInDay.getContinuousSignInDay(localDates);
-        return new RankInfo(rank + 1, score, dailyCount, isTixing,linkSignInCount);
+        return new RankInfo(rank + 1, score, dailyCount, isTixing, linkSignInCount);
     }
 }
 

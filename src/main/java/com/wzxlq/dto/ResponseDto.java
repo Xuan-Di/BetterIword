@@ -23,6 +23,10 @@ public class ResponseDto {
      */
     private Object content;
 
+    public ResponseDto() {
+
+    }
+
     public String getCode() {
         return code;
     }

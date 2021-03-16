@@ -76,14 +76,17 @@ public class WordController {
             userService.insert(new User(openId, wxUser.getNickname(), 1, wxUser.getHeadimgurl()));
             //默认用户设置每日提醒背单词
             redisTemplate.opsForHash().put("User_" + openId, "isTixing", 1);
+            redisTemplate.opsForHash().put("User_" + openId, "dailyCount", 20);
+            redisTemplate.opsForHash().put("User_" + openId, "wordIndex", 20);
             return new QueryAllVO(openId, words);
         } else {
             List<Word> words = wordService.queryTodayWords(openId);
             return new QueryAllVO(openId, words);
         }
     }
+
     @GetMapping("queryWord")
-    public List<Word> queryWord(){
+    public List<Word> queryWord() {
         return wordService.queryAllByLimit(1080, 10);
     }
 
@@ -97,8 +100,10 @@ public class WordController {
                 throw new QueryWordException("查不到单词", 500);
             }
             userService.insert(new User(openId, openId + "测", 1, "http://wework.qpic.cn/bizmail/bia8Sib0kGlNZbysx3LwoGou727nT1ibdY12POO95bXoIU9SibcrffqFjg/0"));
-            //默认用户设置每日提醒背单词
+            //默认用户设置每日提醒背单词和每日背20个单词
             redisTemplate.opsForHash().put("User_" + openId, "isTixing", 1);
+            redisTemplate.opsForHash().put("User_" + openId, "dailyCount", 20);
+            redisTemplate.opsForHash().put("User_" + openId, "wordIndex", 20);
             return new QueryAllVO(openId, words);
         } else {
             List<Word> words = wordService.queryTodayWords(openId);
@@ -113,26 +118,29 @@ public class WordController {
      */
     @GetMapping("/word/queryInEs")
     public List<Map<String, Object>> queryInEs(String keyword) {
-         //return wordService.queryByFuzzyMatching(keyword);
+        //return wordService.queryByFuzzyMatching(keyword);
         return wordService.queryInEs(keyword);
     }
 
-   /**
-    * 功能描述 :每次点击都要经过这个统计
-    * @param wordInfoDTO
-    * @param request
-    * @return boolean
-    */
+    /**
+     * 功能描述 :每次点击都要经过这个统计
+     *
+     * @param wordInfoDTO
+     * @param request
+     * @return boolean
+     */
     @PostMapping("/word/wordInfo")
     public boolean wordInfo(@RequestBody WordInfoDTO wordInfoDTO, HttpServletRequest request) {
         String openId = request.getHeader("token");
         return wordService.wordInfo(wordInfoDTO, openId);
     }
-   /**
-    * 功能描述:完成今天的背单词任务
-    * @param request
-    * @return boolean
-    */
+
+    /**
+     * 功能描述:完成今天的背单词任务
+     *
+     * @param request
+     * @return boolean
+     */
 
     @GetMapping("/word/finishToday")
     public boolean finishToday(HttpServletRequest request) {
@@ -143,6 +151,7 @@ public class WordController {
 
     /**
      * 功能描述 :复习
+     *
      * @param request
      * @return java.util.List<com.wzxlq.entity.Word>
      */
@@ -151,13 +160,15 @@ public class WordController {
         String openId = request.getHeader("token");
         return wordService.review(openId);
     }
+
     /**
      * 功能描述: 词汇量测试
+     *
      * @param
      * @return java.util.List<com.wzxlq.entity.Word>
      */
     @GetMapping("/word/wordCountTest")
     public List<Word> wordCountTest() {
-        return  wordService.wordCountTest();
+        return wordService.wordCountTest();
     }
 }

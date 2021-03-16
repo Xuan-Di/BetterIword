@@ -24,7 +24,7 @@ public class UserController {
     @Resource
     private UserService userService;
     @Autowired
-    private  RedisTemplate redisTemplate;
+    private  RedisTemplate<String,Object> redisTemplate;
     @GetMapping("queryUserByOpenId")
     private User queryUserByOpenId(HttpServletRequest request) {
         String openId = request.getHeader("token");

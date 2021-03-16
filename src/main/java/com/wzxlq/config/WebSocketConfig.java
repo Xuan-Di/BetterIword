@@ -1,5 +1,5 @@
 package com.wzxlq.config;
- 
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +13,8 @@ public class WebSocketConfig {
     public ServerEndpointExporter serverEndpointExporter() {
         return new ServerEndpointExporter();
     }
- 
- 
+
+
     @Bean
     public MySpringConfigurator mySpringConfigurator() {
         return new MySpringConfigurator();

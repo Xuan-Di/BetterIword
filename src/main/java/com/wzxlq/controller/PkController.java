@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Package: com.wzxlq.controller
@@ -37,8 +38,13 @@ public class PkController {
     private UserService userService;
 
     @GetMapping("/enterQueue/{username}")
-    public void enterQueue(@PathVariable String username) {
-        log.info(username+" 进入队列");
+    public ResponseDto enterQueue(@PathVariable String username) {
+        ResponseDto responseDto = new ResponseDto();
+        if(matchQueue.isExist(username)){
+            log.info("重复进队列 无效！");
+            responseDto.setCode("500");
+            return responseDto;
+        }
         if (matchQueue.getSize() >= 1) {
             String opponentName = matchQueue.exitQueue();
             PkRoom firstPerspective = new PkRoom();
@@ -67,21 +73,33 @@ public class PkController {
         } else {
             matchQueue.enterQueue(username);
         }
+        log.info("当前队列长度:"+ matchQueue.getSize());
+        responseDto.setCode("200");
+        return responseDto;
     }
 
     @GetMapping("/cancelQueue/{username}")
-    public int cancelQueue(@PathVariable String username) {
+    public ResponseDto cancelQueue(@PathVariable String username) {
+        ResponseDto responseDto = new ResponseDto();
         log.info(username+" 取消排队");
-        return matchQueue.cancelQueue(username);
+        Map<String, WebSocket> client = WebSocket.getClients();
+        client.remove(username);
+        System.out.println("已连接数量:" + WebSocket.getOnlineCount());
+        matchQueue.cancelQueue(username);
+        responseDto.setCode("200");
+        return responseDto;
     }
 
     @PostMapping("/submitAnswer")
     public void submitAnswer(@RequestBody Answer answer) {
         ResponseDto responseDto = new ResponseDto("score");
         if (answer.getAnswer()) {
+
+            log.info(answer.getUsername() + " 回答正确");
             responseDto.setContent(answer.getUsername() + " 回答正确");
 
         } else {
+            log.info(answer.getUsername() + " 回答错误");
             responseDto.setContent(answer.getUsername() + " 回答错误");
         }
         String jsonStr = JSON.toJSONString(responseDto);

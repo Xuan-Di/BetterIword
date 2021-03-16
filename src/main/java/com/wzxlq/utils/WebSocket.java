@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint(value = "/websocket/{username}")
 //, configurator = MySpringConfigurator.class这个地方经验证不需用加上否则多设备连接回发现两台以上设备连接 回造成下面的session变为同一个，造成其他设备推送失败，所以不要盲目复制别人的，要注意此处
 public class WebSocket {
-    private static int onlineCount = 0;
     private static Map<String, WebSocket> clients = new ConcurrentHashMap<>();
     private Session session;
     private String username;
@@ -29,16 +28,13 @@ public class WebSocket {
     public void onOpen(@PathParam("username") String username, Session session) throws IOException {
         this.username = username;
         this.session = session;
-        log.info(username);
-        addOnlineCount();
         clients.put(username, this);
+        log.info(username+" 建立连接");
         System.out.println("已连接数量:" + getOnlineCount());
     }
-
     @OnClose
     public void onClose() throws IOException {
         clients.remove(username);
-        subOnlineCount();
         System.out.println("已连接数量:" + getOnlineCount());
     }
 
@@ -75,15 +71,7 @@ public class WebSocket {
     }
 
     public static synchronized int getOnlineCount() {
-        return onlineCount;
-    }
-
-    public static synchronized void addOnlineCount() {
-        com.wzxlq.utils.WebSocket.onlineCount++;
-    }
-
-    public static synchronized void subOnlineCount() {
-        com.wzxlq.utils.WebSocket.onlineCount--;
+        return clients.size();
     }
 
     public static synchronized Map<String, WebSocket> getClients() {

@@ -27,8 +27,6 @@ public class UserWordController {
     @Resource
     private UserWordService userWordService;
 
-    @Autowired
-    private RedisTemplate redisTemplate;
     //加入单词到生词本
     @PostMapping("insertWord")
     public UserWord insertWord(@RequestBody UserWordDTO userWordDTO, HttpServletRequest request) {
@@ -36,16 +34,14 @@ public class UserWordController {
         UserWord userWord = new UserWord();
         BeanUtils.copyProperties(userWordDTO, userWord);
         userWord.setOpenId(openId);
-        UserWord uw = userWordService.insert(userWord);
-        return uw;
+        return userWordService.insert(userWord);
     }
 
     //从生词本中删除单词
     @GetMapping("deleteWord")
     public Boolean deleteWord(String englishWord,HttpServletRequest request) {
         String openId = request.getHeader("token");
-        boolean delete = userWordService.deleteById(englishWord,openId);
-        return delete;
+        return userWordService.deleteById(englishWord,openId);
     }
 
     //查询并排序
