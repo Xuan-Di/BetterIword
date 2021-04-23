@@ -19,6 +19,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +42,7 @@ public class WordServiceImpl implements WordService {
     @Resource
     private WordDao wordDao;
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate redisTemplate;
     @Autowired
     private RestHighLevelClient restHighLevelClient;
     @Autowired
@@ -141,6 +144,7 @@ public class WordServiceImpl implements WordService {
                 if (o == null) {
                     break;
                 }
+                //TODO
                 Word word = ((JSONObject) o).toJavaObject(Word.class);
                 words.add(word);
                 dailyCount--;
@@ -304,5 +308,10 @@ public class WordServiceImpl implements WordService {
     @Override
     public List<Word> wordCountTest() {
         return wordDao.wordCountTest();
+    }
+
+    @Override
+    public List<Word> queryByFuzzyMatching(String keyword) {
+        return wordDao.queryByFuzzyMatching(keyword);
     }
 }

@@ -57,8 +57,8 @@
 //
 //    @Test
 //    public void findsiji() throws IOException {
-//        String targetUrl = "http://m.kekenet.com/cet6/ljtl/cet6zhenti";
-//        //String targetUrl = "http://m.kekenet.com/cet4/tl/cet4zhenti";
+//        //String targetUrl = "http://m.kekenet.com/cet6/ljtl/cet6zhenti";
+//        String targetUrl = "http://m.kekenet.com/cet4/tl/cet4zhenti";
 //        //获取connetion
 //        Connection connection = Jsoup.connect(targetUrl);
 //        //伪造请求头
@@ -127,7 +127,7 @@
 ////                list.add(tl);
 ////            }
 //            if (!tl.getTitle().equals("") && !tl.getVoice().equals("")) {
-//                redisTemplate.opsForHash().put("cet6", tl.getTitle(), tl);
+//                redisTemplate.opsForHash().put("cet4", tl.getTitle(), tl);
 //            }
 //        }
 //    }

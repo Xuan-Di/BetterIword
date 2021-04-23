@@ -3,11 +3,14 @@
 //import com.google.gson.Gson;
 //import com.google.gson.reflect.TypeToken;
 //import com.wzxlq.dao.WordDao;
+//import com.wzxlq.entity.Nearbyperson;
 //import com.wzxlq.entity.User;
 //import com.wzxlq.entity.Word;
+//import com.wzxlq.entity.wxUser;
 //import com.wzxlq.service.UserService;
 //import com.wzxlq.utils.FileOperation;
 //import com.wzxlq.utils.Trie;
+//import com.wzxlq.utils.sentUtil;
 //import com.wzxlq.vo.RankPersonVO;
 //import org.elasticsearch.action.bulk.BulkRequest;
 //import org.elasticsearch.action.bulk.BulkResponse;
@@ -25,8 +28,7 @@
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.elasticsearch.client.indices.GetIndexRequest;
-//import org.springframework.data.geo.Distance;
-//import org.springframework.data.geo.Point;
+//import org.springframework.data.geo.*;
 //import org.springframework.data.redis.connection.RedisGeoCommands;
 //import org.springframework.data.redis.core.RedisTemplate;
 //
@@ -138,7 +140,22 @@
 ////        Integer wordCount = (Integer)redisTemplate.opsForHash().get("User_wzx", "wordCount");
 ////        String headImage = (String)redisTemplate.opsForHash().get("User_wzx", "headImage");
 //        //geoadd : (纬度、经度、名称)三元组
-//        //redisTemplate.opsForGeo().add("home", new Point(116.48105, 39.996794), "张三");
+//        String json = sentUtil.get("http://api.map.baidu.com/location/ip?ak=ryFnGbYBMuoymNnla3TSxxpE7rCrPNfT&coor=bd09ll");
+//        Gson gson = new Gson();
+//        Nearbyperson nearbyperson = gson.fromJson(json, Nearbyperson.class);
+//        System.out.println(nearbyperson.getContent().getPoint().getX());
+//        System.out.println(nearbyperson.getContent().getPoint().getY());
+//        Distance distance = new Distance(100, Metrics.KILOMETERS);
+//        //RedisGeoCommands.GeoRadiusCommandArgs args = RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs().includeDistance().includeCoordinates().sortAscending().limit(5);
+//        //GeoResults<RedisGeoCommands.GeoLocation<Object>>  results = redisTemplate.opsForGeo().radius("location", "n05", distance,args);
+//        //List<GeoResult<RedisGeoCommands.GeoLocation<Object>>> list = results.getContent();
+//        //System.out.println(list);
+//        //Distance distance2 = redisTemplate.opsForGeo().distance("home", "张三", "李四", RedisGeoCommands.DistanceUnit.KILOMETERS);
+//        //http://api.map.baidu.com/location/ip?ak=ryFnGbYBMuoymNnla3TSxxpE7rCrPNfT&coor=bd09ll
+//
+//        //redisTemplate.opsForGeo().add("location",
+//        //        new Point(Double.parseDouble(nearbyperson.getContent().getPoint().getX()), Double.parseDouble(nearbyperson.getContent().getPoint().getY())), "n04");
+////redisTemplate.opsForGeo().add("home", new Point(116.48105, 39.996794), "张三");
 //        //redisTemplate.opsForGeo().add("home", new Point(116.514203, 39.905409), "李四");
 //        //redisTemplate.opsForGeo().add("home", new Point(116.489033, 40.007669), "王五");
 //
@@ -148,17 +165,18 @@
 ////        System.out.println(distance);
 ////        System.out.println(distance.getValue());
 ////        System.out.println(distance2.getValue());
-////        List<Word> words = wordDao.queryAll();
-////        Collections.shuffle(words);
-////        List<Word> words = wordDao.queryAllByLimit(0, 10);
-////        List<Word> words2 = wordDao.queryAllByLimit(10, 10);
-////        words.addAll(words2);
-////        System.out.println(words.size());
-//         System.out.println(UUID.randomUUID().toString());
-//        //for (Word word : words) {
-//        //    System.out.println(word.getEnglishWord());
-//        //    wordDao.insert(word);
-//        //}
+//
 //    }
 //
+//    @Test
+//    public void tesxxx() {
+//         List<String> numList = new ArrayList<>();
+//         numList.add("o47m6s2AnLoH76RXa6hDezXMre_k");
+//         //numList.add("wzx");
+//        String[] num = new String[2] ;
+//        num[0]="o47m6s2AnLoH76RXa6hDezXMre_k";
+//        num[1] = "o47m6s63RNsykUBlEjMQsu6G9YPY";
+//        List<Point> points = redisTemplate.opsForGeo().position("location", num);
+//        System.out.println(points);
+//    }
 //}

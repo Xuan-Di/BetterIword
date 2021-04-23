@@ -65,4 +65,5 @@ public interface WordService {
 
     List<Word> wordCountTest();
 
+    List<Word> queryByFuzzyMatching(String keyword);
 }

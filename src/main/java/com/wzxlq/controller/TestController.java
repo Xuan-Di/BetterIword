@@ -1,12 +1,19 @@
 package com.wzxlq.controller;
 
+import com.google.gson.Gson;
+import com.wzxlq.entity.Nearbyperson;
+import com.wzxlq.entity.Word;
+import com.wzxlq.exception.QueryWordException;
 import com.wzxlq.utils.WebSocket;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.wzxlq.utils.sentUtil;
+import com.wzxlq.vo.QueryAllVO;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * @Package: com.wzxlq.controller
@@ -29,5 +36,24 @@ public class TestController {
             e.printStackTrace();
         }
         return username;
+    }
+
+    @GetMapping("getip")
+    public static String getIpAddress(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip.contains(",")) {
+            return ip.split(",")[0];
+        } else {
+            return ip;
+        }
     }
 }

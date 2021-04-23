@@ -9,15 +9,20 @@ import com.wzxlq.entity.*;
 import com.wzxlq.exception.QueryWordException;
 import com.wzxlq.service.UserService;
 import com.wzxlq.service.WordService;
+import com.wzxlq.utils.GeoHashUtil;
 import com.wzxlq.utils.sentUtil;
 import com.wzxlq.vo.QueryAllVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.geo.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +44,10 @@ public class WordController {
 
     @Resource
     private UserService userService;
-    @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private GeoHashUtil geoHashUtil;
 
     @GetMapping("queryAll")
     public QueryAllVO queryAll(HttpServletRequest request) {
@@ -66,6 +73,27 @@ public class WordController {
         System.out.println(wxUser.getHeadimgurl());
         System.out.println(result);
         User user = userService.queryById(openId);
+        String ip = "";
+        ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip.contains(",")) {
+            ip = ip.split(",")[0];
+        }
+        if (!"127.0.0.1".equals(ip)) {
+            String json1 = sentUtil.get("http://api.map.baidu.com/location/ip?ak=ryFnGbYBMuoymNnla3TSxxpE7rCrPNfT&ip=" + ip + "&coor=bd09ll");
+            Nearbyperson nearbyperson = gson.fromJson(json1, Nearbyperson.class);
+            geoHashUtil.redisGeoAdd("location", Double.parseDouble(nearbyperson.getContent().getPoint().getX()),
+                    Double.parseDouble(nearbyperson.getContent().getPoint().getY()), openId);
+        }
+
         if (user == null) {
             List<Word> words = wordService.firstQueryWords(openId);
             if (words == null || words.isEmpty()) {
@@ -91,10 +119,25 @@ public class WordController {
     }
 
     @GetMapping("queryInTest")
-    public QueryAllVO queryInTest(String openId) {
+    public QueryAllVO queryInTest(String openId, HttpServletRequest request) {
+        String ip = "";
+        ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip.contains(",")) {
+            ip = ip.split(",")[0];
+        }
         User user = userService.queryById(openId);
+        List<Word> words = null;
         if (user == null) {
-            List<Word> words = wordService.firstQueryWords(openId);
+            words = wordService.firstQueryWords(openId);
             if (words == null || words.isEmpty()) {
                 log.error("第一次查询不到单词");
                 throw new QueryWordException("查不到单词", 500);
@@ -104,71 +147,78 @@ public class WordController {
             redisTemplate.opsForHash().put("User_" + openId, "isTixing", 1);
             redisTemplate.opsForHash().put("User_" + openId, "dailyCount", 20);
             redisTemplate.opsForHash().put("User_" + openId, "wordIndex", 20);
-            return new QueryAllVO(openId, words);
         } else {
-            List<Word> words = wordService.queryTodayWords(openId);
+            words = wordService.queryTodayWords(openId);
+        }
+
+        if (!"127.0.0.1".equals(ip)) {
+            String json = sentUtil.get("http://api.map.baidu.com/location/ip?ak=ryFnGbYBMuoymNnla3TSxxpE7rCrPNfT&ip=" + ip + "&coor=bd09ll");
+            Gson gson = new Gson();
+            Nearbyperson nearbyperson = gson.fromJson(json, Nearbyperson.class);
+            geoHashUtil.redisGeoAdd("location", Double.parseDouble(nearbyperson.getContent().getPoint().getX()),
+                    Double.parseDouble(nearbyperson.getContent().getPoint().getY()), openId);
+        }
             return new QueryAllVO(openId, words);
         }
+
+
+        /**
+         * @param keyword
+         * @return
+         */
+        @GetMapping("/word/queryInEs")
+        public List<Word> queryInEs (String keyword){
+            return wordService.queryByFuzzyMatching(keyword);
+            //return wordService.queryInEs(keyword);
+        }
+
+        /**
+         * 功能描述 :每次点击都要经过这个统计
+         *
+         * @param wordInfoDTO
+         * @param request
+         * @return boolean
+         */
+        @PostMapping("/word/wordInfo")
+        public boolean wordInfo (@RequestBody WordInfoDTO wordInfoDTO, HttpServletRequest request){
+            String openId = request.getHeader("token");
+            return wordService.wordInfo(wordInfoDTO, openId);
+        }
+
+        /**
+         * 功能描述:完成今天的背单词任务
+         *
+         * @param request
+         * @return boolean
+         */
+
+        @GetMapping("/word/finishToday")
+        public boolean finishToday (HttpServletRequest request){
+            String openId = request.getHeader("token");
+            return wordService.killWordMapWithOpenId(openId);
+        }
+
+
+        /**
+         * 功能描述 :复习
+         *
+         * @param request
+         * @return java.util.List<com.wzxlq.entity.Word>
+         */
+        @GetMapping("/word/review")
+        public List<Word> review (HttpServletRequest request){
+            String openId = request.getHeader("token");
+            return wordService.review(openId);
+        }
+
+        /**
+         * 功能描述: 词汇量测试
+         *
+         * @param
+         * @return java.util.List<com.wzxlq.entity.Word>
+         */
+        @GetMapping("/word/wordCountTest")
+        public List<Word> wordCountTest () {
+            return wordService.wordCountTest();
+        }
     }
-
-
-    /**
-     * @param keyword
-     * @return
-     */
-    @GetMapping("/word/queryInEs")
-    public List<Map<String, Object>> queryInEs(String keyword) {
-        //return wordService.queryByFuzzyMatching(keyword);
-        return wordService.queryInEs(keyword);
-    }
-
-    /**
-     * 功能描述 :每次点击都要经过这个统计
-     *
-     * @param wordInfoDTO
-     * @param request
-     * @return boolean
-     */
-    @PostMapping("/word/wordInfo")
-    public boolean wordInfo(@RequestBody WordInfoDTO wordInfoDTO, HttpServletRequest request) {
-        String openId = request.getHeader("token");
-        return wordService.wordInfo(wordInfoDTO, openId);
-    }
-
-    /**
-     * 功能描述:完成今天的背单词任务
-     *
-     * @param request
-     * @return boolean
-     */
-
-    @GetMapping("/word/finishToday")
-    public boolean finishToday(HttpServletRequest request) {
-        String openId = request.getHeader("token");
-        return wordService.killWordMapWithOpenId(openId);
-    }
-
-
-    /**
-     * 功能描述 :复习
-     *
-     * @param request
-     * @return java.util.List<com.wzxlq.entity.Word>
-     */
-    @GetMapping("/word/review")
-    public List<Word> review(HttpServletRequest request) {
-        String openId = request.getHeader("token");
-        return wordService.review(openId);
-    }
-
-    /**
-     * 功能描述: 词汇量测试
-     *
-     * @param
-     * @return java.util.List<com.wzxlq.entity.Word>
-     */
-    @GetMapping("/word/wordCountTest")
-    public List<Word> wordCountTest() {
-        return wordService.wordCountTest();
-    }
-}

@@ -29,6 +29,12 @@
         from word_rand
         limit #{offset}, #{limit}
     </select>
+    <select id="queryByFuzzyMatching" resultMap="WordMap">
+         select
+          english_Word, pa, chinese_Word, eng_Instance1, chi_Instance1, eng_Instance2, chi_Instance2, collect, pron
+        from word_rand
+        where english_Word like "%"#{keyword}"%"
+    </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="WordMap">
