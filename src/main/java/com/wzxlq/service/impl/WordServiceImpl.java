@@ -138,6 +138,7 @@ public class WordServiceImpl implements WordService {
         List<Word> words = new ArrayList<>();
         //如果缓存map中没有该用户
         if (!todayWordMap.containsKey(openId)) {
+            //根据openid获得每天背多少个单词
             int dailyCount = getDailyCount(openId);
             while (dailyCount > 0) {
                 Object o = redisTemplate.opsForList().rightPop(openId + CACHE_POOL);
@@ -188,12 +189,13 @@ public class WordServiceImpl implements WordService {
         }
         keySet.clear();
     }
-
     @Override
+    //统计每个单词的情况
     public boolean wordInfo(WordInfoDTO wordInfo, String openId) {
         if (wordInfo == null) {
             return false;
         }
+        //保存know,fuzzy,unknow这三个队列的名称,用于12点后清空redis的每个人的三个队列
         keySet.add(openId + wordInfo.getType());
         redisTemplate.opsForSet().add(openId + wordInfo.getType(), wordInfo.getWord());
         if ("know".equals(wordInfo.getType())) {
@@ -231,34 +233,7 @@ public class WordServiceImpl implements WordService {
         }
     }
 
-
-    //在ES中查询
-    @Override
-    public List<Map<String, Object>> queryInEs(String keyword) {
-        SearchRequest searchRequest = new SearchRequest("iword");
-        //构建搜索条件
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        //查询条件，我们可以使用queryBuilders工具来实现
-        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery("englishWord", "*" + keyword + "*"));
-        sourceBuilder.query(boolQueryBuilder);
-        sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
-
-        //执行搜索
-        searchRequest.source(sourceBuilder);
-        SearchResponse search = null;
-        try {
-            search = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ArrayList<Map<String, Object>> list = new ArrayList<>();
-        for (SearchHit documentFields : search.getHits().getHits()) {
-
-            list.add(documentFields.getSourceAsMap());
-        }
-        return list;
-    }
-
+    //复习
     @Override
     public List<Word> review(String openId) {
         ArrayList<Word> list = new ArrayList<>();
@@ -304,13 +279,14 @@ public class WordServiceImpl implements WordService {
             }
         }
     }
-
+    //词汇量测试
     @Override
     public List<Word> wordCountTest() {
         return wordDao.wordCountTest();
     }
 
     @Override
+    //模糊查询单词
     public List<Word> queryByFuzzyMatching(String keyword) {
         return wordDao.queryByFuzzyMatching(keyword);
     }

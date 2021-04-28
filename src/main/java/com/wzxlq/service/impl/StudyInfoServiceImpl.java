@@ -13,8 +13,7 @@ import java.util.List;
 /**
  * (StudyInfo)表服务实现类
  *
- * @author makejava
- * @since 2020-04-25 10:53:48
+ * @author 李倩
  */
 @Service("studyInfoService")
 public class StudyInfoServiceImpl implements StudyInfoService {

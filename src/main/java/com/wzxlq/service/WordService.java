@@ -50,8 +50,6 @@ public interface WordService {
 
     List<Word> queryTodayWords(String openId);
 
-    List<Map<String, Object>> queryInEs(String keyword);
-
 
      void killWordMap();
 

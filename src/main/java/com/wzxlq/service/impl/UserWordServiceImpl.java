@@ -11,8 +11,7 @@ import java.util.List;
 /**
  * (UserWord)表服务实现类
  *
- * @author makejava
- * @since 2020-04-15 18:01:11
+ * @author 李倩
  */
 @Service("userWordService")
 public class UserWordServiceImpl implements UserWordService {

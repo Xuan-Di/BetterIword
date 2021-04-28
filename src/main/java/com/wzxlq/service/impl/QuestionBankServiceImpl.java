@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * (QuestionBank)表服务实现类
  *
- * @author makejava
+ * @author 李倩
  * @since 2021-01-30 12:53:41
  */
 @Service("questionBankService")
