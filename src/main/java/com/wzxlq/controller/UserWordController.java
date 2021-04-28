@@ -14,16 +14,13 @@ import java.util.List;
 
 /**
  * (UserWord)表控制层
- *
- * @author makejava
- * @since 2020-04-15 18:01:11
+ *  生词本接口
+ * @author 李倩
  */
 @RestController
 @RequestMapping("userWord")
 public class UserWordController {
-    /**
-     * 服务对象.
-     */
+
     @Resource
     private UserWordService userWordService;
 
@@ -32,6 +29,7 @@ public class UserWordController {
     public UserWord insertWord(@RequestBody UserWordDTO userWordDTO, HttpServletRequest request) {
         String openId = request.getHeader("token");
         UserWord userWord = new UserWord();
+        //将userWordDTO的属性全部赋值给userWord
         BeanUtils.copyProperties(userWordDTO, userWord);
         userWord.setOpenId(openId);
         return userWordService.insert(userWord);
@@ -53,9 +51,11 @@ public class UserWordController {
         }
         List<UserWord> userWordList = userWordService.queryAllByOpenId(openId);
         if (sort == 1) {
+            //按照字典序排序
             userWordList.sort((a, b) -> a.getEnglishWord().compareTo(b.getEnglishWord()));
         }
         if (sort == 2) {
+            //按照词频排序
             userWordList.sort((a, b) -> b.getCollect() - a.getCollect());
         }
         return userWordList;

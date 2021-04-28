@@ -31,19 +31,19 @@ public class KillWordMap {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    //    @Scheduled(cron = "0/5 * * * * ?")
-    //5min
-    //@Scheduled(cron = "0 0/5 * * * ?")
+    //每天23:58分执行
     @Scheduled(cron = "0 58 23 * * ?")
     public void killWordMap() {
         System.out.println("kill todayWordMap!!!");
+        //结算学习情况
         wordService.analyzeStudyInfo();
+        //清空背单词缓存
         wordService.killWordMap();
     }
-
     @Scheduled(cron = "0 30 20 * * ?")
     public void tixing() {
         List<User> users = userService.queryAll();
+        //获取Accesstoken
         String at = sentUtil.getAccessToken();
         String url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" + at;
         mybean mybean = new mybean();

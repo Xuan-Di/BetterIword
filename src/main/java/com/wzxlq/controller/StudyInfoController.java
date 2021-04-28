@@ -12,23 +12,30 @@ import java.util.List;
 /**
  * (StudyInfo)表控制层
  *
- * @author makejava
- * @since 2020-04-25 10:53:48
+ * @author 李倩
+ * 学习情况的接口
  */
 @RestController
 @RequestMapping("studyInfo")
 public class StudyInfoController {
-    /**
-     * 服务对象
-     */
     @Resource
     private StudyInfoService studyInfoService;
-
+    /**
+     * 功能描述:查询我的学习情况
+     * @param request
+     * @return java.util.List<com.wzxlq.entity.StudyInfo>
+     */
     @GetMapping("queryStudyInfo")
     public List<StudyInfo> queryStudyInfo(HttpServletRequest request) {
         String openId = request.getHeader("token");
         return studyInfoService.queryStudyInfo(openId);
     }
+
+    /**
+     * 功能描述 :查询签到日期数组
+     * @param request
+     * @return java.util.List<java.time.LocalDate>
+     */
     @GetMapping("querySignTime")
     public List<LocalDate> querySignTime(HttpServletRequest request){
         String openId = request.getHeader("token");

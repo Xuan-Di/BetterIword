@@ -9,8 +9,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
- * @author 王照轩
- * @date 2020/4/10 - 11:07
+ * @author 李倩
+ * @date 2021/4/10 - 11:07
+ * 对redis的序列化方式进行配置
  */
 @Configuration
 public class RedisConfig {

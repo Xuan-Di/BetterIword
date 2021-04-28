@@ -16,25 +16,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.geo.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * (Word)表控制层
- *
- * @author makejava
- * @since 2020-04-13 21:49:20
+ * 背单词接口
+ * @author 李倩
  */
 @Slf4j
 @RestController
-//@RequestMapping("word")
 public class WordController {
     /**
      * 服务对象
@@ -49,6 +43,7 @@ public class WordController {
     @Autowired
     private GeoHashUtil geoHashUtil;
 
+    //真实手机请求的接口,用以返回用户要背的单词
     @GetMapping("queryAll")
     public QueryAllVO queryAll(HttpServletRequest request) {
         //获取code
@@ -73,6 +68,7 @@ public class WordController {
         System.out.println(wxUser.getHeadimgurl());
         System.out.println(result);
         User user = userService.queryById(openId);
+        //获取ip
         String ip = "";
         ip = request.getHeader("x-forwarded-for");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
@@ -87,13 +83,16 @@ public class WordController {
         if (ip.contains(",")) {
             ip = ip.split(",")[0];
         }
+        //如果本机调试那么不获取定位
         if (!"127.0.0.1".equals(ip)) {
+            //调用百度的ip定位
             String json1 = sentUtil.get("http://api.map.baidu.com/location/ip?ak=ryFnGbYBMuoymNnla3TSxxpE7rCrPNfT&ip=" + ip + "&coor=bd09ll");
             Nearbyperson nearbyperson = gson.fromJson(json1, Nearbyperson.class);
+            //将用户经纬度加入到redis的geo结构
             geoHashUtil.redisGeoAdd("location", Double.parseDouble(nearbyperson.getContent().getPoint().getX()),
                     Double.parseDouble(nearbyperson.getContent().getPoint().getY()), openId);
         }
-
+        //如果是新用户
         if (user == null) {
             List<Word> words = wordService.firstQueryWords(openId);
             if (words == null || words.isEmpty()) {
@@ -102,22 +101,18 @@ public class WordController {
             }
             //用户第一次进入，插入用户信息到数据库
             userService.insert(new User(openId, wxUser.getNickname(), 1, wxUser.getHeadimgurl()));
-            //默认用户设置每日提醒背单词
+            //默认用户设置每日提醒背单词,每天背20个,单词索引从20开始
             redisTemplate.opsForHash().put("User_" + openId, "isTixing", 1);
             redisTemplate.opsForHash().put("User_" + openId, "dailyCount", 20);
             redisTemplate.opsForHash().put("User_" + openId, "wordIndex", 20);
             return new QueryAllVO(openId, words);
         } else {
+            //如果是老用户
             List<Word> words = wordService.queryTodayWords(openId);
             return new QueryAllVO(openId, words);
         }
     }
-
-    @GetMapping("queryWord")
-    public List<Word> queryWord() {
-        return wordService.queryAllByLimit(1080, 10);
-    }
-
+    //浏览器调试环境请求的接口,需要前端传openId
     @GetMapping("queryInTest")
     public QueryAllVO queryInTest(String openId, HttpServletRequest request) {
         String ip = "";
@@ -163,8 +158,9 @@ public class WordController {
 
 
         /**
+         * 功能描述 :模糊查询单词
          * @param keyword
-         * @return
+         * @return java.util.List<com.wzxlq.entity.Word>
          */
         @GetMapping("/word/queryInEs")
         public List<Word> queryInEs (String keyword){
@@ -173,8 +169,7 @@ public class WordController {
         }
 
         /**
-         * 功能描述 :每次点击都要经过这个统计
-         *
+         * 功能描述 :每次点击三个按钮都要经过这个接口,用以统计背单词情况
          * @param wordInfoDTO
          * @param request
          * @return boolean
@@ -187,11 +182,9 @@ public class WordController {
 
         /**
          * 功能描述:完成今天的背单词任务
-         *
          * @param request
          * @return boolean
          */
-
         @GetMapping("/word/finishToday")
         public boolean finishToday (HttpServletRequest request){
             String openId = request.getHeader("token");
@@ -200,8 +193,7 @@ public class WordController {
 
 
         /**
-         * 功能描述 :复习
-         *
+         * 功能描述 :复习接口
          * @param request
          * @return java.util.List<com.wzxlq.entity.Word>
          */

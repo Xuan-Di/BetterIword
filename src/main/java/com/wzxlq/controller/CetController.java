@@ -13,15 +13,21 @@ import java.util.Comparator;
 import java.util.Set;
 
 /**
- * @author 王照轩
+ * @author 李倩
  * @date 2020/6/3 - 10:59
+ * 四六级听力接口
  */
 @RestController
 @RequestMapping("cet")
 public class CetController {
     @Autowired
     public RedisTemplate<String, Object> redisTemplate;
-
+    /**
+     * 功能描述
+     * 从redis中获得所有四级听力列表
+     * @param
+     * @return java.util.ArrayList<java.lang.String>
+     */
     @GetMapping("tingLiFourList")
     public ArrayList<String> tingLiFourList() {
         ArrayList<String> list = new ArrayList<>();
@@ -29,6 +35,7 @@ public class CetController {
         for (Object o : set) {
             list.add(o.toString());
         }
+        //根据年限进行排序,近些年的排在前面
         list.sort(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
@@ -37,17 +44,28 @@ public class CetController {
         });
         return list;
     }
-
+    /**
+     * 功能描述
+     * 从redis中获得指定四级听力内容
+     * @param title
+     * @return com.wzxlq.entity.TingLi
+     */
     @GetMapping("tingLiFourOne")
     public TingLi tingLiFourOne(String title) {
         Object tl4 =  redisTemplate.opsForHash().get("cet4", title);
         TingLi tl = null;
         if (tl4 != null) {
+            //将Object对象强转为TingLi对象
             tl = ((JSONObject) tl4).toJavaObject(TingLi.class);
         }
         return tl;
     }
-
+ /**
+     * 功能描述
+     * 从redis中获得所有六级听力列表
+     * @param
+     * @return java.util.ArrayList<java.lang.String>
+     */
     @GetMapping("tingLiSixList")
     public ArrayList<String> tingLiSixList() {
         ArrayList<String> list = new ArrayList<>();
@@ -55,6 +73,7 @@ public class CetController {
         for (Object o : set) {
             list.add(o.toString());
         }
+        //根据年限进行排序,近些年的排在前面
         list.sort(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
@@ -63,7 +82,12 @@ public class CetController {
         });
         return list;
     }
-
+    /**
+     * 功能描述
+     * 从redis中获得指定六级听力内容
+     * @param title
+     * @return com.wzxlq.entity.TingLi
+     */
     @GetMapping("tingLiSixOne")
     public TingLi tingLiSixOne(String title) {
         System.out.println(title);

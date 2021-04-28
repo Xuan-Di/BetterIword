@@ -5,8 +5,9 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
- * @author 王照轩
- * @date 2020/4/19 - 13:45
+ * @author 李倩
+ * @date 2021/4/19 - 13:45
+ * 后端对跨域的配置
  */
 @Configuration
 public class CorsConfig extends WebMvcConfigurerAdapter {

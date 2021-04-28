@@ -7,6 +7,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import javax.websocket.server.ServerEndpointConfig;
+/**
+ * 功能描述
+ * 将websocket集成到spring中
+ * @param
+ * @return
+ */
 
 public class MySpringConfigurator extends ServerEndpointConfig.Configurator implements ApplicationContextAware {
  

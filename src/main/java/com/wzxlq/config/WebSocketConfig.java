@@ -7,6 +7,13 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 @Configuration
 @ConditionalOnWebApplication
+/**
+ * 功能描述
+ * 配置websocket
+ * @param null
+ * @return
+ */
+
 public class WebSocketConfig {
     //使用boot内置tomcat时需要注入此bean
     @Bean
