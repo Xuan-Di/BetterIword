@@ -3,8 +3,7 @@ package com.wzxlq.exception;
 import lombok.Data;
 
 /**
- * @author 王照轩
- * @date 2020/4/27 - 10:19
+ * @author 李倩
  */
 @Data
 public class OpenIdNULLException extends RuntimeException{

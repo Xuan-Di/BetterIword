@@ -111,44 +111,6 @@ public class ServerSocket {
     public void onClose(@PathParam("key") String id) throws IOException {
         System.out.println(id + "断开");
         connections.remove(id);
-
         byteArrayOutputStream.close();
-        //BufferedOutputStream bos = null;
-        //FileOutputStream fos = null;
-        //File file = null;
-        //try {
-        //    file = new File("D:\\testtest.wav");
-        //
-        //    //输出流
-        //    fos = new FileOutputStream(file);
-        //
-        //    //缓冲流
-        //    bos = new BufferedOutputStream(fos);
-        //
-        //    //将字节数组写出
-        //    bos.write(byteArrayOutputStream.toByteArray());
-        //} catch (Exception e) {
-        //    e.printStackTrace();
-        //} finally {
-        //    if (bos != null) {
-        //        try {
-        //            bos.close();
-        //        } catch (IOException e) {
-        //            e.printStackTrace();
-        //        }
-        //    }
-        //    if (fos != null) {
-        //        try {
-        //            fos.close();
-        //        } catch (IOException e) {
-        //            e.printStackTrace();
-        //        }
-        //    }
-        //}
-        //Map<String, String> aipSpeech = BaiduUtil.getAipSpeech("D:\\testtest.wav");
-        //String result = aipSpeech.get("result");
-        //result = result.substring(0, result.length() - 1);
-        //System.out.println(result);
-        //connections.remove(id);
     }
 }

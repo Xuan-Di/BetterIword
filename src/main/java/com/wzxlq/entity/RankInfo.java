@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * @author 王照轩
- * @date 2020/5/6 - 9:56
- */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -3,8 +3,7 @@ package com.wzxlq.utils;
 import java.util.TreeMap;
 
 /**
- * @author 王照轩
- * @date 2020/2/11 - 12:03
+ * @author 李倩
  */
 public class Trie {
     private static class Node {

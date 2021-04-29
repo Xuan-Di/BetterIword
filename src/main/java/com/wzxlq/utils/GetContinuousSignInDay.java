@@ -4,8 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * @author 王照轩
- * @date 2020/5/31 - 16:37
+ * @author 李倩
  */
 public class GetContinuousSignInDay {
     public static int getContinuousSignInDay(List<LocalDate> signInList) {

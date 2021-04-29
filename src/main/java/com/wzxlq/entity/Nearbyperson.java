@@ -2,13 +2,6 @@ package com.wzxlq.entity;
 
 import lombok.Data;
 
-/**
- * @Package: com.wzxlq.entity
- * @ClassName: nearbyperson
- * @Author: 王照轩
- * @CreateTime: 2021/4/14 22:27
- * @Description:
- */
 @Data
 public class Nearbyperson {
 

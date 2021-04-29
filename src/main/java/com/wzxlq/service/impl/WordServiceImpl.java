@@ -5,31 +5,17 @@ import com.wzxlq.dto.WordInfoDTO;
 import com.wzxlq.entity.StudyInfo;
 import com.wzxlq.entity.Word;
 import com.wzxlq.dao.WordDao;
-import com.wzxlq.exception.OpenIdNULLException;
 import com.wzxlq.service.StudyInfoService;
 import com.wzxlq.service.WordService;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
+
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * (Word)表服务实现类
@@ -43,8 +29,6 @@ public class WordServiceImpl implements WordService {
     private WordDao wordDao;
     @Autowired
     private RedisTemplate redisTemplate;
-    @Autowired
-    private RestHighLevelClient restHighLevelClient;
     @Autowired
     private RankService rankService;
     @Autowired
@@ -197,16 +181,36 @@ public class WordServiceImpl implements WordService {
         }
         //保存know,fuzzy,unknow这三个队列的名称,用于12点后清空redis的每个人的三个队列
         keySet.add(openId + wordInfo.getType());
-        redisTemplate.opsForSet().add(openId + wordInfo.getType(), wordInfo.getWord());
+
         if ("know".equals(wordInfo.getType())) {
+            //判断该单词是否已经出现在了unknow队列或者fuzzy队列
+            Boolean isUnknowMember = redisTemplate.opsForSet().isMember(openId + "unknow", wordInfo.getWord());
+            Boolean isFuzzyMember = redisTemplate.opsForSet().isMember(openId + "fuzzy", wordInfo.getWord());
+            //如果该单词没有在unknow和fuzzy队列，那么才允许入know队列
+            if(!isFuzzyMember && !isUnknowMember){
+                redisTemplate.opsForSet().add(openId + wordInfo.getType(), wordInfo.getWord());
+            }
+            //因为类型是know，所以要从背单词缓存中删除该单词
             boolean remove = todayWordMap.get(openId).remove(wordInfo.getWord());
-            //redisTemplate.opsForList().remove(openId + CACHE_POOL, 1, wordInfo.getWord());
             Integer wordIndex = (Integer) redisTemplate.opsForHash().get("User_" + openId, "wordIndex");
             wordIndex = Optional.ofNullable(wordIndex).orElse(0);
+            //背了一个单词，那么该用户的数据库单词索引要加1
             redisTemplate.opsForHash().put("User_" + openId, "wordIndex", wordIndex + 1);
             if (remove) {
-                //增加排名
+                //增加排名1分
                 rankService.incrScore("score", openId, 1);
+            }
+        }
+        if("fuzzy".equals(wordInfo.getType())){
+            Boolean isUnknowMember = redisTemplate.opsForSet().isMember(openId + "unknow", wordInfo.getWord());
+            if(!isUnknowMember){
+                redisTemplate.opsForSet().add(openId + wordInfo.getType(), wordInfo.getWord());
+            }
+        }
+        if("unknow".equals(wordInfo.getType())){
+            Boolean isFuzzyMember = redisTemplate.opsForSet().isMember(openId + "fuzzy", wordInfo.getWord());
+            if(!isFuzzyMember){
+                redisTemplate.opsForSet().add(openId + wordInfo.getType(), wordInfo.getWord());
             }
         }
         return true;

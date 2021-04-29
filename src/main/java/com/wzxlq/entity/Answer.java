@@ -5,7 +5,7 @@ import lombok.Data;
 /**
  * @Package: com.wzxlq.entity
  * @ClassName: Answer
- * @Author: 王照轩
+ * @Author: 李倩
  * @CreateTime: 2021/1/12 16:53
  * @Description:
  */

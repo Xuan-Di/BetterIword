@@ -7,12 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 
-/**
- * (UserWord)实体类
- *
- * @author makejava
- * @since 2020-04-15 18:01:11
- */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

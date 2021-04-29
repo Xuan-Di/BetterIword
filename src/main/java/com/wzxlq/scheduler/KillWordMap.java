@@ -1,12 +1,10 @@
 package com.wzxlq.scheduler;
 
-import com.sun.org.apache.regexp.internal.RE;
 import com.wzxlq.entity.User;
 import com.wzxlq.entity.mybean;
 import com.wzxlq.service.UserService;
 import com.wzxlq.service.impl.WordServiceImpl;
 import com.wzxlq.utils.sentUtil;
-import javafx.scene.layout.CornerRadii;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,8 +17,7 @@ import java.util.List;
 
 
 /**
- * @author 王照轩
- * @date 2020/4/13 - 23:22
+ * @author 李倩
  */
 @Component
 public class KillWordMap {

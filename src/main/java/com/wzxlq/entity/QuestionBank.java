@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * (QuestionBank)实体类
  *
- * @author makejava
+ * @author 李倩
  * @since 2021-01-30 12:53:41
  */
 public class QuestionBank implements Serializable {

@@ -7,14 +7,10 @@ import com.wzxlq.entity.AccessToken;
 import com.wzxlq.entity.JsapiTicket;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
-import static org.springframework.data.elasticsearch.annotations.FieldType.Date;
+
 
 /**
  * @author 王照轩

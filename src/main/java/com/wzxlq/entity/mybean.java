@@ -1,9 +1,6 @@
 package com.wzxlq.entity;
 
-/**
- * @author 王照轩
- * @date 2020/2/10 - 0:14
- */
+
 public class mybean {
 
     /**

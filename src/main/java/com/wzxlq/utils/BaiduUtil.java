@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * @Package: com.wzxlq.util
  * @ClassName: BaiduUtil
- * @Author: 王照轩
+ * @Author: 李倩
  * @CreateTime: 2021/4/21 10:21
  * @Description:
  */

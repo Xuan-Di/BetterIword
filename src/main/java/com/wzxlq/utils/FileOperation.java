@@ -9,8 +9,8 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
- * @author 王照轩
- * @date 2020/4/16 - 21:47
+ * @author 李倩
+ * 将txt文件读入
  */
 public class FileOperation {
 

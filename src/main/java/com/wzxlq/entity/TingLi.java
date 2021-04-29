@@ -7,10 +7,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * @author 王照轩
- * @date 2020/6/2 - 12:57
- */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

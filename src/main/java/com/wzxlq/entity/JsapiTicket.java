@@ -1,8 +1,7 @@
 package com.wzxlq.entity;
 
 /**
- * @author 王照轩
- * @date 2020/5/16 - 17:17
+ * @author 李倩
  */
 public class JsapiTicket {
 

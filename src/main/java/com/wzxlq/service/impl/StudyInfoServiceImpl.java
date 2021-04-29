@@ -4,6 +4,7 @@ import com.wzxlq.entity.StudyInfo;
 import com.wzxlq.dao.StudyInfoDao;
 import com.wzxlq.entity.Word;
 import com.wzxlq.service.StudyInfoService;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -51,7 +52,7 @@ public class StudyInfoServiceImpl implements StudyInfoService {
      */
     @Override
     public int update(StudyInfo studyInfo) {
-          return  this.studyInfoDao.update(studyInfo);
+        return this.studyInfoDao.update(studyInfo);
     }
 
     /**
@@ -67,6 +68,7 @@ public class StudyInfoServiceImpl implements StudyInfoService {
 
     @Override
     public List<StudyInfo> queryStudyInfo(String openId) {
+
         return studyInfoDao.queryStudyInfo(openId);
     }
 

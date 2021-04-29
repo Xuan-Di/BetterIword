@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 /**
  * @Package: com.wzxlq.util
  * @ClassName: MatchQueue
- * @Author: 王照轩
+ * @Author:  李倩
  * @CreateTime: 2021/1/10 16:46
  * @Description:
  */
