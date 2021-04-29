@@ -93,8 +93,6 @@ public class WordServiceImpl implements WordService {
     public List<Word> firstQueryWords(String openId) {
         //生成用户复习的单词队列
         Queue<Word> wordQueue = new PriorityQueue<>((a, b) -> b.getCollect() - a.getCollect());
-        //先加入一个NULL单词用于后续判断是不是第一次背单词，如果是，就不会有复习单词弹出
-        wordQueue.add(new Word("NULL", Integer.MAX_VALUE));
         //将用户的复习单词队列加入到复习的hashmap
         reviewMap.put(openId, wordQueue);
         Integer dailyCount = getDailyCount(openId);
@@ -103,7 +101,6 @@ public class WordServiceImpl implements WordService {
         reviewMap.get(openId).addAll(list);
         //缓存今天的单词列表，当天下次访问单词就不从redis中取，直接从缓存map中取
         todayWordMap.put(openId, list);
-        //redisTemplate.opsForList().leftPushAll(openId + CACHE_POOL, list);
         //初始化当天个人的学习情况(插入)
         StudyInfo studyInfo = new StudyInfo(openId, 0, LocalDate.now(), 0, 0, 0, 0);
         studyInfoService.insert(studyInfo);
@@ -145,7 +142,7 @@ public class WordServiceImpl implements WordService {
             while (reviewMap.get(openId) != null && reviewMap.get(openId).size() > 40) {
                 reviewMap.get(openId).remove();
             }
-            //复习队列不为空时，将今天redis弹出的单词加入到复习队列中
+            //复习队列不为空时，将今天的单词加入到复习队列中
             if (reviewMap.get(openId) != null) {
                 reviewMap.get(openId).addAll(words);
             }
@@ -248,9 +245,6 @@ public class WordServiceImpl implements WordService {
                 list.addAll(wordQueue);
             }
             //数量为21说明是第一次背单词，那么清除NULL字符然后返回空数组
-        } else if (wordQueue.size() == 21) {
-            reviewMap.get(openId).poll();
-            return list;
         } else {
             //数量大于21那么返回20个单词
             for (int i = 0; i < 20; i++) {
