@@ -35,7 +35,8 @@ public class WebSocket {
     @OnClose
     public void onClose() throws IOException {
         clients.remove(username);
-        System.out.println("已连接数量:" + getOnlineCount());
+
+        System.out.println((username+"断开,已连接数量:" + getOnlineCount()));
     }
 
     @OnMessage

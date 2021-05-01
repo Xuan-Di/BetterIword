@@ -25,6 +25,7 @@ import java.util.List;
 /**
  * (Word)表控制层
  * 背单词接口
+ *
  * @author 李倩
  */
 @Slf4j
@@ -42,6 +43,8 @@ public class WordController {
     private RedisTemplate redisTemplate;
     @Autowired
     private GeoHashUtil geoHashUtil;
+
+
 
     //真实手机请求的接口,用以返回用户要背的单词
     @GetMapping("queryAll")
@@ -112,6 +115,7 @@ public class WordController {
             return new QueryAllVO(openId, words);
         }
     }
+
     //浏览器调试环境请求的接口,需要前端传openId
     @GetMapping("queryInTest")
     public QueryAllVO queryInTest(String openId, HttpServletRequest request) {
@@ -153,64 +157,70 @@ public class WordController {
             geoHashUtil.redisGeoAdd("location", Double.parseDouble(nearbyperson.getContent().getPoint().getX()),
                     Double.parseDouble(nearbyperson.getContent().getPoint().getY()), openId);
         }
-            return new QueryAllVO(openId, words);
-        }
-
-
-        /**
-         * 功能描述 :模糊查询单词
-         * @param keyword
-         * @return java.util.List<com.wzxlq.entity.Word>
-         */
-        @GetMapping("/word/queryInEs")
-        public List<Word> queryInEs (String keyword){
-            return wordService.queryByFuzzyMatching(keyword);
-            //return wordService.queryInEs(keyword);
-        }
-
-        /**
-         * 功能描述 :每次点击三个按钮都要经过这个接口,用以统计背单词情况
-         * @param wordInfoDTO
-         * @param request
-         * @return boolean
-         */
-        @PostMapping("/word/wordInfo")
-        public boolean wordInfo (@RequestBody WordInfoDTO wordInfoDTO, HttpServletRequest request){
-            String openId = request.getHeader("token");
-            return wordService.wordInfo(wordInfoDTO, openId);
-        }
-
-        /**
-         * 功能描述:完成今天的背单词任务
-         * @param request
-         * @return boolean
-         */
-        @GetMapping("/word/finishToday")
-        public boolean finishToday (HttpServletRequest request){
-            String openId = request.getHeader("token");
-            return wordService.killWordMapWithOpenId(openId);
-        }
-
-
-        /**
-         * 功能描述 :复习接口
-         * @param request
-         * @return java.util.List<com.wzxlq.entity.Word>
-         */
-        @GetMapping("/word/review")
-        public List<Word> review (HttpServletRequest request){
-            String openId = request.getHeader("token");
-            return wordService.review(openId);
-        }
-
-        /**
-         * 功能描述: 词汇量测试
-         *
-         * @param
-         * @return java.util.List<com.wzxlq.entity.Word>
-         */
-        @GetMapping("/word/wordCountTest")
-        public List<Word> wordCountTest () {
-            return wordService.wordCountTest();
-        }
+        return new QueryAllVO(openId, words);
     }
+
+
+    /**
+     * 功能描述 :模糊查询单词
+     *
+     * @param keyword
+     * @return java.util.List<com.wzxlq.entity.Word>
+     */
+    @GetMapping("/word/queryInEs")
+    public List<Word> queryInEs(String keyword) {
+        return wordService.queryByFuzzyMatching(keyword);
+        //return wordService.queryInEs(keyword);
+    }
+
+    /**
+     * 功能描述 :每次点击三个按钮都要经过这个接口,用以统计背单词情况
+     *
+     * @param wordInfoDTO
+     * @param request
+     * @return boolean
+     */
+    @PostMapping("/word/wordInfo")
+    public boolean wordInfo(@RequestBody WordInfoDTO wordInfoDTO, HttpServletRequest request) {
+        String openId = request.getHeader("token");
+        return wordService.wordInfo(wordInfoDTO, openId);
+    }
+
+    /**
+     * 功能描述:完成今天的背单词任务
+     *
+     * @param request
+     * @return boolean
+     */
+    @GetMapping("/word/finishToday")
+    public boolean finishToday(HttpServletRequest request) {
+        String openId = request.getHeader("token");
+        return wordService.killWordMapWithOpenId(openId);
+    }
+
+
+    /**
+     * 功能描述 :复习接口
+     *
+     * @param request
+     * @return java.util.List<com.wzxlq.entity.Word>
+     */
+    @GetMapping("/word/review")
+    public List<Word> review(HttpServletRequest request) {
+        String openId = request.getHeader("token");
+        List<Word> review = wordService.review(openId);
+        System.out.println(review);
+        return review;
+    }
+
+    /**
+     * 功能描述: 词汇量测试
+     *
+     * @param
+     * @return java.util.List<com.wzxlq.entity.Word>
+     */
+    @GetMapping("/word/wordCountTest")
+    public List<Word> wordCountTest() {
+        return wordService.wordCountTest();
+    }
+}

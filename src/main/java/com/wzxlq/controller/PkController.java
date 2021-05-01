@@ -123,6 +123,8 @@ public class PkController {
      */
     @PostMapping("/submitAnswer")
     public void submitAnswer(@RequestBody Answer answer) {
+        System.out.println("我 "+answer.getUsername());
+        System.out.println("对手 "+answer.getOpponentName());
         //初始化传输信息对象,并设置类型为score
         ResponseDto responseDto = new ResponseDto("score");
         //如果回答正确

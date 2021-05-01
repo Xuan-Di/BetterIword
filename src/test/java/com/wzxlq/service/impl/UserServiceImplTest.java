@@ -21,13 +21,12 @@
 //import java.util.*;
 //
 //
-
 //@SpringBootTest
 //class UserServiceImplTest {
 //    @Resource
 //    private UserDao userDao;
 //    @Autowired
-//    private RedisTemplate<String, Object> redisTemplate;
+//    private RedisTemplate redisTemplate;
 //    public HashMap<String, List<Integer>> studyInfoMap = new HashMap<>();
 //    public List<Integer> list = new ArrayList<>();
 //    public HashMap<String, Queue<Word>> reviewMap = new HashMap<>();
@@ -134,10 +133,8 @@
 //        //String openId = "wzx";
 //        //redisTemplate.opsForHash().put("User_" + openId, "isTixing", 1);
 //        //redisTemplate.opsForList().leftPush("MATCHQUEUE", "wzx");
-//
-//        Object o = redisTemplate.opsForList().rightPop("MATCHQUEUE");
-//        String m = (String) o;
-//        System.out.println(m);
+//        Long know = redisTemplate.opsForSet().size("n03know");
+//        System.out.println(know);
 //        //Object tixing = redisTemplate.opsForHash().get("cet4", "2019年6月英语四级:第1套");
 //        //TingLi tl = ((JSONObject) tixing).toJavaObject(TingLi.class);
 //    }

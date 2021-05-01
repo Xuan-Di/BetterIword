@@ -2,6 +2,7 @@ package com.wzxlq.controller;
 
 import com.wzxlq.entity.StudyInfo;
 import com.wzxlq.service.StudyInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ import java.util.List;
 public class StudyInfoController {
     @Resource
     private StudyInfoService studyInfoService;
-    @Resource
+    @Autowired
     private RedisTemplate redisTemplate;
 
     /**
@@ -33,14 +34,14 @@ public class StudyInfoController {
     @GetMapping("queryStudyInfo")
     public List<StudyInfo> queryStudyInfo(HttpServletRequest request) {
         String openId = request.getHeader("token");
-        Long know = redisTemplate.opsForSet().size(openId + "know");
+        Long know = redisTemplate.opsForSet().size(openId+"know");
         Long unknow = redisTemplate.opsForSet().size(openId + "unknow");
         Long fuzzy = redisTemplate.opsForSet().size(openId + "fuzzy");
-        int knowNum=0;
-        int unknowNum=0;
-        int fuzzyNum=0;
+        int knowNum = 0;
+        int unknowNum = 0;
+        int fuzzyNum = 0;
         if (know != null) {
-             knowNum = know.intValue();
+            knowNum = know.intValue();
         }
         if (unknow != null) {
             unknowNum = unknow.intValue();

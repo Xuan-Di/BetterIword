@@ -98,7 +98,6 @@ public class WordServiceImpl implements WordService {
         Integer dailyCount = getDailyCount(openId);
         //弹出20个单词，并加入到复习队列
         List<Word> list = wordDao.queryAllByLimit(0, dailyCount);
-        reviewMap.get(openId).addAll(list);
         //缓存今天的单词列表，当天下次访问单词就不从redis中取，直接从缓存map中取
         todayWordMap.put(openId, list);
         //初始化当天个人的学习情况(插入)
@@ -142,10 +141,7 @@ public class WordServiceImpl implements WordService {
             while (reviewMap.get(openId) != null && reviewMap.get(openId).size() > 40) {
                 reviewMap.get(openId).remove();
             }
-            //复习队列不为空时，将今天的单词加入到复习队列中
-            if (reviewMap.get(openId) != null) {
-                reviewMap.get(openId).addAll(words);
-            }
+
             //初始化今日学习情况
             StudyInfo studyInfo = new StudyInfo(openId, 0, LocalDate.now(), 0, 0, 0, 0);
             studyInfoService.insert(studyInfo);
@@ -170,6 +166,7 @@ public class WordServiceImpl implements WordService {
         }
         keySet.clear();
     }
+
     @Override
     //统计每个单词的情况
     public boolean wordInfo(WordInfoDTO wordInfo, String openId) {
@@ -184,7 +181,7 @@ public class WordServiceImpl implements WordService {
             Boolean isUnknowMember = redisTemplate.opsForSet().isMember(openId + "unknow", wordInfo.getWord());
             Boolean isFuzzyMember = redisTemplate.opsForSet().isMember(openId + "fuzzy", wordInfo.getWord());
             //如果该单词没有在unknow和fuzzy队列，那么才允许入know队列
-            if(!isFuzzyMember && !isUnknowMember){
+            if (!isFuzzyMember && !isUnknowMember) {
                 redisTemplate.opsForSet().add(openId + wordInfo.getType(), wordInfo.getWord());
             }
             //因为类型是know，所以要从背单词缓存中删除该单词
@@ -197,16 +194,21 @@ public class WordServiceImpl implements WordService {
                 //增加排名1分
                 rankService.incrScore("score", openId, 1);
             }
+
+            //复习队列不为空时，将认识的单词加入到复习队列中
+            if (reviewMap.get(openId) != null) {
+                reviewMap.get(openId).add(wordInfo.word);
+            }
         }
-        if("fuzzy".equals(wordInfo.getType())){
+        if ("fuzzy".equals(wordInfo.getType())) {
             Boolean isUnknowMember = redisTemplate.opsForSet().isMember(openId + "unknow", wordInfo.getWord());
-            if(!isUnknowMember){
+            if (!isUnknowMember) {
                 redisTemplate.opsForSet().add(openId + wordInfo.getType(), wordInfo.getWord());
             }
         }
-        if("unknow".equals(wordInfo.getType())){
+        if ("unknow".equals(wordInfo.getType())) {
             Boolean isFuzzyMember = redisTemplate.opsForSet().isMember(openId + "fuzzy", wordInfo.getWord());
-            if(!isFuzzyMember){
+            if (!isFuzzyMember) {
                 redisTemplate.opsForSet().add(openId + wordInfo.getType(), wordInfo.getWord());
             }
         }
@@ -239,17 +241,11 @@ public class WordServiceImpl implements WordService {
     public List<Word> review(String openId) {
         ArrayList<Word> list = new ArrayList<>();
         Queue<Word> wordQueue = reviewMap.get(openId);
-        //若复习的单词数量小于20，则直接返回，不删除队列中的数据
-        if (wordQueue.size() <= 20) {
-            if (!wordQueue.isEmpty()) {
-                list.addAll(wordQueue);
-            }
-            //数量为21说明是第一次背单词，那么清除NULL字符然后返回空数组
-        } else {
-            //数量大于21那么返回20个单词
-            for (int i = 0; i < 20; i++) {
-                list.add(wordQueue.poll());
-            }
+        if (wordQueue == null) {
+            return list;
+        }
+        for (int i = 0; i < 20; i++) {
+            list.add(wordQueue.poll());
         }
         return list;
     }
@@ -277,6 +273,7 @@ public class WordServiceImpl implements WordService {
             }
         }
     }
+
     //词汇量测试
     @Override
     public List<Word> wordCountTest() {
